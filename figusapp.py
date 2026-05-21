@@ -1,8 +1,10 @@
 import os
 import uvicorn
-from fastapi import FastAPI, Request
+from fastapi import FastAPI
 from fastapi.responses import JSONResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
+from pydantic import BaseModel, Field
+from typing import Optional, Union, Dict, Any
 
 # Importamos las funciones con tu lógica desde funciones.py
 from funciones import procesar_registro, verificar_login
@@ -13,22 +15,113 @@ HTML_DIR = os.path.join(BASE_DIR, "html")
 
 app = FastAPI(
     title="FigusAPP API",
-    description="Backend en FastAPI para FigusAPP",
+    description="Backend en FastAPI para FigusAPP con soporte completo de códigos HTTP documentados en Swagger y Postman",
     version="1.0.0"
 )
 
-@app.get("/")
+# ----------------- Modelos de Datos para Peticiones (Request Models) -----------------
+
+class RegistroRequest(BaseModel):
+    nombre: Optional[str] = Field(
+        None, 
+        description="Nombre del usuario", 
+        json_schema_extra={"example": "Diego"}
+    )
+    apellido: Optional[str] = Field(
+        None, 
+        description="Apellido del usuario", 
+        json_schema_extra={"example": "Mora"}
+    )
+    mail: Optional[str] = Field(
+        None, 
+        description="Correo electrónico del usuario", 
+        json_schema_extra={"example": "diego@correo.com"}
+    )
+    dni: Optional[str] = Field(
+        None, 
+        description="DNI del usuario (sin puntos)", 
+        json_schema_extra={"example": "12345678"}
+    )
+    edad: Optional[Union[int, str]] = Field(
+        None, 
+        description="Edad del usuario. Si es menor de 18 años, el servidor devolverá HTTP 400.", 
+        json_schema_extra={"example": 25}
+    )
+    fechaRegistro: Optional[str] = Field(
+        None, 
+        description="Fecha y hora del registro en formato ISO", 
+        json_schema_extra={"example": "2026-05-21T18:22:00Z"}
+    )
+
+class LoginRequest(BaseModel):
+    mail: Optional[str] = Field(
+        None, 
+        description="Correo electrónico registrado", 
+        json_schema_extra={"example": "diego@correo.com"}
+    )
+    dni: Optional[str] = Field(
+        None, 
+        description="DNI registrado sin puntos", 
+        json_schema_extra={"example": "12345678"}
+    )
+
+# ----------------- Modelos de Datos para Respuestas (Response Models) -----------------
+
+class UsuarioResponse(BaseModel):
+    nombre: str = Field(..., description="Nombre registrado del usuario", example="Diego")
+    apellido: str = Field(..., description="Apellido registrado del usuario", example="Mora")
+    mail: str = Field(..., description="Correo electrónico registrado", example="diego@correo.com")
+    dni: str = Field(..., description="DNI registrado", example="12345678")
+    edad: int = Field(..., description="Edad registrada", example=25)
+    fechaRegistro: str = Field(..., description="Fecha de registro", example="2026-05-21T18:22:00Z")
+
+class RegistroExitosoResponse(BaseModel):
+    mensaje: str = Field("Guardado correctamente", description="Mensaje de éxito")
+    usuario: UsuarioResponse = Field(..., description="Datos del usuario registrado")
+
+class LoginExitosoResponse(BaseModel):
+    mensaje: str = Field("Ingreso exitoso", description="Mensaje de éxito")
+    usuario: UsuarioResponse = Field(..., description="Datos del usuario autenticado")
+
+class ErrorResponse(BaseModel):
+    error: str = Field(..., description="Descripción detallada del error", example="Mensaje de error descriptivo")
+
+
+# ----------------- Rutas del Servidor -----------------
+
+@app.get("/", summary="Redirección Principal", description="Redirige automáticamente al usuario a registro.html", response_class=RedirectResponse)
 async def root():
-    # Si el usuario entra a la ruta principal, lo mandamos a registro.html
     return RedirectResponse(url="/registro.html")
 
-@app.post("/guardar_registro")
-async def guardar_registro(request: Request):
-    datos_web = await request.json()
-    # Llamamos a tu lógica de validaciones
+
+@app.post(
+    "/guardar_registro",
+    summary="Registrar Nuevo Usuario",
+    description="Procesa y almacena un nuevo usuario en registro.json. Valida campos obligatorios, edad y correos/DNIs duplicados.",
+    responses={
+        200: {
+            "model": RegistroExitosoResponse,
+            "description": "Registro completado con éxito."
+        },
+        400: {
+            "model": ErrorResponse,
+            "description": "Petición Incorrecta - Edad menor a 18 años."
+        },
+        409: {
+            "model": ErrorResponse,
+            "description": "Conflicto - El DNI o Correo electrónico ingresado ya está registrado."
+        },
+        422: {
+            "model": ErrorResponse,
+            "description": "Entidad No Procesable - Campos obligatorios vacíos o formato de correo incorrecto."
+        }
+    }
+)
+async def guardar_registro(registro: RegistroRequest):
+    # Convertimos el modelo Pydantic a diccionario para compatibilidad directa con funciones.py
+    datos_web = registro.model_dump()
     resultado = procesar_registro(datos_web)
     
-    # Preparamos la respuesta JSON
     if resultado["success"]:
         respuesta = {"mensaje": "Guardado correctamente", "usuario": resultado["data"]}
     else:
@@ -36,13 +129,31 @@ async def guardar_registro(request: Request):
         
     return JSONResponse(status_code=resultado["code"], content=respuesta)
 
-@app.post("/login")
-async def login(request: Request):
-    datos_web = await request.json()
-    # Llamamos a tu lógica de login
+
+@app.post(
+    "/login",
+    summary="Iniciar Sesión de Usuario",
+    description="Verifica las credenciales de correo electrónico y DNI en registro.json para iniciar sesión.",
+    responses={
+        200: {
+            "model": LoginExitosoResponse,
+            "description": "Inicio de sesión exitoso."
+        },
+        401: {
+            "model": ErrorResponse,
+            "description": "No Autorizado - Correo o DNI incorrectos."
+        },
+        422: {
+            "model": ErrorResponse,
+            "description": "Entidad No Procesable - Campos de correo o DNI vacíos."
+        }
+    }
+)
+async def login(login_data: LoginRequest):
+    # Convertimos el modelo Pydantic a diccionario para compatibilidad directa con funciones.py
+    datos_web = login_data.model_dump()
     resultado = verificar_login(datos_web)
     
-    # Preparamos la respuesta JSON
     if resultado["success"]:
         respuesta = {"mensaje": "Ingreso exitoso", "usuario": resultado["data"]}
     else:
