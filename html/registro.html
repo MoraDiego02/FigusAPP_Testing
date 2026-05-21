@@ -48,6 +48,10 @@
                             Debes ser mayor de 18 años para registrarte.
                         </div>
                     </div>
+                    <div class="col-12">
+                        <label for="password" class="form-label text-white">Contraseña</label>
+                        <input type="password" class="form-control custom-input" id="password" required placeholder="Mínimo 6 caracteres">
+                    </div>
                     <div class="col-12 mt-4">
                         <button type="submit" class="btn btn-primary w-100 fw-bold btn-registro" id="btnSubmit">Registrarse</button>
                     </div>
@@ -79,6 +83,7 @@
             const mail = document.getElementById('mail').value.trim();
             const dni = document.getElementById('dni').value.trim();
             const edad = parseInt(document.getElementById('edad').value);
+            const password = document.getElementById('password').value.trim();
 
             // Función para mostrar errores en pantalla sin usar alert
             const mostrarError = (mensaje) => {
@@ -88,8 +93,13 @@
                 setTimeout(() => { document.getElementById('mensajeError').style.display = 'none'; }, 4000);
             };
 
-            if (!nombre || !apellido || !mail || !dni || isNaN(edad)) {
+            if (!nombre || !apellido || !mail || !dni || isNaN(edad) || !password) {
                 mostrarError("Por favor, completa todos los campos correctamente.");
+                return;
+            }
+
+            if (password.length < 6) {
+                mostrarError("La contraseña debe tener al menos 6 caracteres.");
                 return;
             }
 
@@ -111,6 +121,7 @@
                 mail: mail,
                 dni: dni,
                 edad: edad,
+                password: password,
                 fechaRegistro: new Date().toISOString()
             };
 

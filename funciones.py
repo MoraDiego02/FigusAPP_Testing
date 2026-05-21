@@ -6,16 +6,25 @@ def procesar_registro(datos):
     apellido = str(datos.get("apellido") or "").strip()
     mail = str(datos.get("mail") or "").strip()
     dni = str(datos.get("dni") or "").strip()
+    password = str(datos.get("password") or "").strip()
     
     # 1. Validación HTTP 422: Validar campos vacíos
-    if not nombre or not apellido or not mail or not dni:
+    if not nombre or not apellido or not mail or not dni or not password:
         return {
             "success": False, 
             "code": 422, 
             "error": "Por favor, completa todos los campos obligatorios."
         }
         
-    # 2. Validación HTTP 422: Validar formato básico de email (que tenga '@')
+    # 2. Validación HTTP 422: Validar largo mínimo de contraseña (mínimo 6 caracteres)
+    if len(password) < 6:
+        return {
+            "success": False,
+            "code": 422,
+            "error": "La contraseña debe tener al menos 6 caracteres."
+        }
+        
+    # 3. Validación HTTP 422: Validar formato básico de email (que tenga '@')
     if "@" not in mail:
         return {
             "success": False, 
@@ -26,7 +35,7 @@ def procesar_registro(datos):
     try:
         edad = int(datos.get("edad") or 0)
         
-        # 3. Validación HTTP 400: Edad mínima de 18 años
+        # 4. Validación HTTP 400: Edad mínima de 18 años
         if edad < 18:
             return {
                 "success": False, 
@@ -49,7 +58,7 @@ def procesar_registro(datos):
             except Exception as e:
                 print("Error leyendo JSON:", e)
 
-        # 4. Validación HTTP 409: Evitar duplicados (DNI o Mail)
+        # 5. Validación HTTP 409: Evitar duplicados (DNI o Mail)
         for usuario in usuarios:
             if usuario.get("dni") == dni:
                 return {
@@ -71,6 +80,7 @@ def procesar_registro(datos):
             "mail": mail,
             "dni": dni,
             "edad": edad,
+            "password": password,
             "fechaRegistro": datos.get("fechaRegistro", "")
         }
         
@@ -96,13 +106,14 @@ def procesar_registro(datos):
 def verificar_login(datos):
     mail = str(datos.get("mail") or "").strip()
     dni = str(datos.get("dni") or "").strip()
+    password = str(datos.get("password") or "").strip()
     
     # 1. Validación HTTP 422: Validar campos vacíos
-    if not mail or not dni:
+    if not mail or not dni or not password:
         return {
             "success": False, 
             "code": 422, 
-            "error": "Por favor, ingresa tanto el correo como el DNI."
+            "error": "Por favor, ingresa el correo, el DNI y la contraseña."
         }
         
     # Definimos la ruta del JSON
@@ -120,9 +131,9 @@ def verificar_login(datos):
         except Exception as e:
             print("Error leyendo JSON para login:", e)
             
-    # 2. Buscamos si existe un usuario que coincida exactamente con DNI y Mail
+    # 2. Buscamos si existe un usuario que coincida exactamente con DNI, Mail y Contraseña
     for usuario in usuarios:
-        if usuario.get("mail") == mail and usuario.get("dni") == dni:
+        if usuario.get("mail") == mail and usuario.get("dni") == dni and usuario.get("password") == password:
             print(f"\n¡Inicio de sesión exitoso para {usuario.get('nombre')}!")
             return {
                 "success": True, 
@@ -134,6 +145,7 @@ def verificar_login(datos):
     return {
         "success": False, 
         "code": 401, 
-        "error": "El correo electrónico o el DNI ingresados son incorrectos."
+        "error": "El correo electrónico, DNI o contraseña ingresados son incorrectos."
     }
+
 

@@ -47,6 +47,11 @@ class RegistroRequest(BaseModel):
         description="Edad del usuario. Si es menor de 18 años, el servidor devolverá HTTP 400.", 
         json_schema_extra={"example": 25}
     )
+    password: Optional[str] = Field(
+        None, 
+        description="Contraseña elegida por el usuario (mínimo 6 caracteres)", 
+        json_schema_extra={"example": "secreto123"}
+    )
     fechaRegistro: Optional[str] = Field(
         None, 
         description="Fecha y hora del registro en formato ISO", 
@@ -64,6 +69,11 @@ class LoginRequest(BaseModel):
         description="DNI registrado sin puntos", 
         json_schema_extra={"example": "12345678"}
     )
+    password: Optional[str] = Field(
+        None, 
+        description="Contraseña del usuario", 
+        json_schema_extra={"example": "secreto123"}
+    )
 
 # ----------------- Modelos de Datos para Respuestas (Response Models) -----------------
 
@@ -73,7 +83,9 @@ class UsuarioResponse(BaseModel):
     mail: str = Field(..., description="Correo electrónico registrado", example="diego@correo.com")
     dni: str = Field(..., description="DNI registrado", example="12345678")
     edad: int = Field(..., description="Edad registrada", example=25)
+    password: str = Field(..., description="Contraseña registrada del usuario", example="secreto123")
     fechaRegistro: str = Field(..., description="Fecha de registro", example="2026-05-21T18:22:00Z")
+
 
 class RegistroExitosoResponse(BaseModel):
     mensaje: str = Field("Guardado correctamente", description="Mensaje de éxito")
@@ -97,7 +109,7 @@ async def root():
 @app.post(
     "/guardar_registro",
     summary="Registrar Nuevo Usuario",
-    description="Procesa y almacena un nuevo usuario en registro.json. Valida campos obligatorios, edad y correos/DNIs duplicados.",
+    description="Procesa y almacena un nuevo usuario en registro.json. Valida campos obligatorios, edad, contraseña y correos/DNIs duplicados.",
     responses={
         200: {
             "model": RegistroExitosoResponse,
@@ -113,7 +125,7 @@ async def root():
         },
         422: {
             "model": ErrorResponse,
-            "description": "Entidad No Procesable - Campos obligatorios vacíos o formato de correo incorrecto."
+            "description": "Entidad No Procesable - Campos obligatorios vacíos (incluyendo contraseña), formato de correo incorrecto o contraseña menor de 6 caracteres."
         }
     }
 )
@@ -133,7 +145,7 @@ async def guardar_registro(registro: RegistroRequest):
 @app.post(
     "/login",
     summary="Iniciar Sesión de Usuario",
-    description="Verifica las credenciales de correo electrónico y DNI en registro.json para iniciar sesión.",
+    description="Verifica las credenciales de correo electrónico, DNI y contraseña en registro.json para iniciar sesión.",
     responses={
         200: {
             "model": LoginExitosoResponse,
@@ -141,11 +153,11 @@ async def guardar_registro(registro: RegistroRequest):
         },
         401: {
             "model": ErrorResponse,
-            "description": "No Autorizado - Correo o DNI incorrectos."
+            "description": "No Autorizado - Correo, DNI o contraseña incorrectos."
         },
         422: {
             "model": ErrorResponse,
-            "description": "Entidad No Procesable - Campos de correo o DNI vacíos."
+            "description": "Entidad No Procesable - Campos de correo, DNI o contraseña vacíos."
         }
     }
 )
