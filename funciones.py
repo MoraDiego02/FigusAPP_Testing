@@ -2,10 +2,10 @@ import json
 import os
 
 def procesar_registro(datos):
-    nombre = datos.get("nombre", "").strip()
-    apellido = datos.get("apellido", "").strip()
-    mail = datos.get("mail", "").strip()
-    dni = datos.get("dni", "").strip()
+    nombre = str(datos.get("nombre") or "").strip()
+    apellido = str(datos.get("apellido") or "").strip()
+    mail = str(datos.get("mail") or "").strip()
+    dni = str(datos.get("dni") or "").strip()
     
     # 1. Validación HTTP 422: Validar campos vacíos
     if not nombre or not apellido or not mail or not dni:
@@ -24,7 +24,7 @@ def procesar_registro(datos):
         }
 
     try:
-        edad = int(datos.get("edad", 0))
+        edad = int(datos.get("edad") or 0)
         
         # 3. Validación HTTP 400: Edad mínima de 18 años
         if edad < 18:
@@ -86,7 +86,7 @@ def procesar_registro(datos):
             "data": usuario_validado
         }
         
-    except ValueError:
+    except (ValueError, TypeError):
         return {
             "success": False, 
             "code": 422, 
@@ -94,8 +94,8 @@ def procesar_registro(datos):
         }
 
 def verificar_login(datos):
-    mail = datos.get("mail", "").strip()
-    dni = datos.get("dni", "").strip()
+    mail = str(datos.get("mail") or "").strip()
+    dni = str(datos.get("dni") or "").strip()
     
     # 1. Validación HTTP 422: Validar campos vacíos
     if not mail or not dni:

@@ -14,5 +14,13 @@
         "dni": "2",
         "edad": 20,
         "fechaRegistro": "2026-05-21T00:37:55.359Z"
+    },
+    {
+        "nombre": "John",
+        "apellido": "Doe",
+        "mail": "john@example.com",
+        "dni": "12345678",
+        "edad": 20,
+        "fechaRegistro": "2026-05-21T17:48:19.369Z"
     }
 ]

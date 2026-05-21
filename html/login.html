@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -11,6 +12,7 @@
     <!-- Custom CSS (Reutilizamos los estilos del registro) -->
     <link rel="stylesheet" href="registro.css">
 </head>
+
 <body>
     <div class="registro-container d-flex align-items-center justify-content-center min-vh-100">
         <!-- Tarjeta de Login -->
@@ -20,45 +22,47 @@
                 <h2 class="fw-bold mt-2 mb-1">Iniciar Sesión</h2>
                 <p class="text-white-50">Ingresa tus datos para ingresar al álbum</p>
             </div>
-            
+
             <form id="loginForm" novalidate>
                 <div class="row g-3">
                     <div class="col-12">
                         <label for="mail" class="form-label text-white">Correo Electrónico</label>
-                        <input type="email" class="form-control custom-input" id="mail" required placeholder="ejemplo@correo.com">
+                        <input type="email" class="form-control custom-input" id="mail" required
+                            placeholder="ejemplo@correo.com">
                     </div>
                     <div class="col-12">
                         <label for="dni" class="form-label text-white">DNI</label>
-                        <input type="number" class="form-control custom-input" id="dni" required placeholder="Ingresa tu DNI sin puntos">
+                        <input type="number" class="form-control custom-input" id="dni" required
+                            placeholder="Ingresa tu DNI sin puntos">
                     </div>
                     <div class="col-12 mt-4">
-                        <button type="submit" class="btn btn-primary w-100 fw-bold btn-registro" id="btnSubmit">Ingresar</button>
+                        <button type="submit" class="btn btn-primary w-100 fw-bold btn-registro"
+                            id="btnSubmit">Ingresar</button>
                     </div>
-                    
-                    <!-- Banners para mensajes de éxito / error (sin alertas del navegador) -->
+
                     <div class="col-12" id="mensajeExito" style="display: none;">
                         <div class="alert alert-success mt-3" role="alert">
-                            ¡Ingreso exitoso! Redireccionando...
+                            ¡Ingreso exitoso!
                         </div>
                     </div>
                     <div class="col-12" id="mensajeError" style="display: none;">
                         <div class="alert alert-danger mt-3" role="alert" id="textoError">
-                            <!-- El texto de error se inyectará aquí -->
                         </div>
                     </div>
                 </div>
             </form>
 
             <div class="mt-4 text-center">
-                <p class="text-white-50 mb-0">¿No tienes cuenta? <a href="registro.html" class="text-primary fw-bold text-decoration-none hover-link">Regístrate</a></p>
+                <p class="text-white-50 mb-0">¿No tienes cuenta? <a href="registro.html"
+                        class="text-primary fw-bold text-decoration-none hover-link">Regístrate</a></p>
             </div>
         </div>
     </div>
 
     <script>
-        document.getElementById('loginForm').addEventListener('submit', async function(e) {
-            e.preventDefault(); 
-            
+        document.getElementById('loginForm').addEventListener('submit', async function (e) {
+            e.preventDefault();
+
             const mail = document.getElementById('mail').value.trim();
             const dni = document.getElementById('dni').value.trim();
 
@@ -97,7 +101,7 @@
                     // Mostrar mensaje de éxito
                     document.getElementById('mensajeExito').style.display = 'block';
                     document.getElementById('loginForm').reset();
-                    
+
                     // Simulación de ingreso exitoso
                     setTimeout(() => {
                         alert("¡Sesión iniciada con éxito! (Aquí iría el redireccionamiento al Home del álbum)");
@@ -114,4 +118,5 @@
         });
     </script>
 </body>
+
 </html>

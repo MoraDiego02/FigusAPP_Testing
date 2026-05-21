@@ -134,8 +134,12 @@
                         document.getElementById('mensajeExito').style.display = 'none';
                     }, 3000);
                 } else {
-                    // Se agrega el código de estado para verificar el testing de errores (Ej: 400)
-                    mostrarError("Error HTTP devuelto por el servidor: " + response.status);
+                    try {
+                        const data = await response.json();
+                        mostrarError(data.error || "Error HTTP devuelto por el servidor: " + response.status);
+                    } catch (e) {
+                        mostrarError("Error HTTP devuelto por el servidor: " + response.status);
+                    }
                 }
             } catch (error) {
                 console.error("Error:", error);
