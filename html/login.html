@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FigusAPP - Iniciar Sesión</title>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600&display=swap" rel="stylesheet">
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Custom CSS (Reutilizamos los estilos del registro) -->
+    <link rel="stylesheet" href="registro.css">
+</head>
+<body>
+    <div class="registro-container d-flex align-items-center justify-content-center min-vh-100">
+        <!-- Tarjeta de Login -->
+        <div class="glass-card p-4 p-md-5 rounded-4 shadow-lg">
+            <div class="text-center mb-4">
+                <img src="figusappfinal.png" alt="FigusAPP Logo" class="logo-img img-fluid">
+                <h2 class="fw-bold mt-2 mb-1">Iniciar Sesión</h2>
+                <p class="text-white-50">Ingresa tus datos para ingresar al álbum</p>
+            </div>
+            
+            <form id="loginForm" novalidate>
+                <div class="row g-3">
+                    <div class="col-12">
+                        <label for="mail" class="form-label text-white">Correo Electrónico</label>
+                        <input type="email" class="form-control custom-input" id="mail" required placeholder="ejemplo@correo.com">
+                    </div>
+                    <div class="col-12">
+                        <label for="dni" class="form-label text-white">DNI</label>
+                        <input type="number" class="form-control custom-input" id="dni" required placeholder="Ingresa tu DNI sin puntos">
+                    </div>
+                    <div class="col-12 mt-4">
+                        <button type="submit" class="btn btn-primary w-100 fw-bold btn-registro" id="btnSubmit">Ingresar</button>
+                    </div>
+                    
+                    <!-- Banners para mensajes de éxito / error (sin alertas del navegador) -->
+                    <div class="col-12" id="mensajeExito" style="display: none;">
+                        <div class="alert alert-success mt-3" role="alert">
+                            ¡Ingreso exitoso! Redireccionando...
+                        </div>
+                    </div>
+                    <div class="col-12" id="mensajeError" style="display: none;">
+                        <div class="alert alert-danger mt-3" role="alert" id="textoError">
+                            <!-- El texto de error se inyectará aquí -->
+                        </div>
+                    </div>
+                </div>
+            </form>
+
+            <div class="mt-4 text-center">
+                <p class="text-white-50 mb-0">¿No tienes cuenta? <a href="registro.html" class="text-primary fw-bold text-decoration-none hover-link">Regístrate</a></p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('loginForm').addEventListener('submit', async function(e) {
+            e.preventDefault(); 
+            
+            const mail = document.getElementById('mail').value.trim();
+            const dni = document.getElementById('dni').value.trim();
+
+            // Función para mostrar errores en pantalla (consistencia con el registro)
+            const mostrarError = (mensaje) => {
+                document.getElementById('textoError').textContent = mensaje;
+                document.getElementById('mensajeError').style.display = 'block';
+                document.getElementById('mensajeExito').style.display = 'none';
+                setTimeout(() => { document.getElementById('mensajeError').style.display = 'none'; }, 4000);
+            };
+
+            if (!mail || !dni) {
+                mostrarError("Por favor, completa todos los campos.");
+                return;
+            }
+
+            // Datos que enviaremos al endpoint de login
+            const credenciales = {
+                mail: mail,
+                dni: dni
+            };
+
+            try {
+                // Haremos un POST a /login (Paso 5)
+                const response = await fetch('/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(credenciales)
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    // Mostrar mensaje de éxito
+                    document.getElementById('mensajeExito').style.display = 'block';
+                    document.getElementById('loginForm').reset();
+                    
+                    // Simulación de ingreso exitoso
+                    setTimeout(() => {
+                        alert("¡Sesión iniciada con éxito! (Aquí iría el redireccionamiento al Home del álbum)");
+                        document.getElementById('mensajeExito').style.display = 'none';
+                    }, 1500);
+                } else {
+                    // Mostrar el error retornado por el servidor (ej: 401 Unauthorized)
+                    mostrarError(data.error || "Error de inicio de sesión.");
+                }
+            } catch (error) {
+                console.error("Error:", error);
+                mostrarError("Error de conexión. Asegúrate de que el servidor de Python esté corriendo.");
+            }
+        });
+    </script>
+</body>
+</html>

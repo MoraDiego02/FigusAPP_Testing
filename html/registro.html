@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FigusAPP - Registro</title>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600&display=swap" rel="stylesheet">
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="registro.css">
+</head>
+
+<body>
+    <div class="registro-container d-flex align-items-center justify-content-center min-vh-100">
+        <!-- Tarjeta -->
+        <div class="glass-card p-4 p-md-5 rounded-4 shadow-lg">
+            <div class="text-center mb-4">
+                <img src="figusappfinal.png" alt="FigusAPP Logo" class="logo-img img-fluid">
+                <h2 class="fw-bold mt-2 mb-1">Crear Cuenta</h2>
+                <p class="text-white-50">Completá tus datos para organizar tu álbum</p>
+            </div>
+            
+            <form id="registroForm" novalidate>
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label for="nombre" class="form-label text-white">Nombre</label>
+                        <input type="text" class="form-control custom-input" id="nombre" required placeholder="Tu nombre">
+                    </div>
+                    <div class="col-md-6">
+                        <label for="apellido" class="form-label text-white">Apellido</label>
+                        <input type="text" class="form-control custom-input" id="apellido" required placeholder="Tu apellido">
+                    </div>
+                    <div class="col-12">
+                        <label for="mail" class="form-label text-white">Correo Electrónico</label>
+                        <input type="email" class="form-control custom-input" id="mail" required placeholder="ejemplo@correo.com">
+                    </div>
+                    <div class="col-md-6">
+                        <label for="dni" class="form-label text-white">DNI</label>
+                        <input type="number" class="form-control custom-input" id="dni" required placeholder="Sin puntos">
+                    </div>
+                    <div class="col-md-6">
+                        <label for="edad" class="form-label text-white">Edad</label>
+                        <input type="number" class="form-control custom-input" id="edad" min="1" required placeholder="+18 años">
+                        <div class="invalid-feedback" id="edadError">
+                            Debes ser mayor de 18 años para registrarte.
+                        </div>
+                    </div>
+                    <div class="col-12 mt-4">
+                        <button type="submit" class="btn btn-primary w-100 fw-bold btn-registro" id="btnSubmit">Registrarse</button>
+                    </div>
+                    <div class="col-12" id="mensajeExito" style="display: none;">
+                        <div class="alert alert-success mt-3" role="alert">
+                            ¡Registro guardado exitosamente en registro.json!
+                        </div>
+                    </div>
+                    <div class="col-12" id="mensajeError" style="display: none;">
+                        <div class="alert alert-danger mt-3" role="alert" id="textoError">
+                            <!-- El texto de error irá aquí -->
+                        </div>
+                    </div>
+                </div>
+            </form>
+
+            <div class="mt-4 text-center">
+                <p class="text-white-50 mb-0">¿Ya tienes cuenta? <a href="#" onclick="iniciar()" class="text-primary fw-bold text-decoration-none hover-link">Inicia Sesión</a></p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('registroForm').addEventListener('submit', async function(e) {
+            e.preventDefault(); 
+            
+            const nombre = document.getElementById('nombre').value.trim();
+            const apellido = document.getElementById('apellido').value.trim();
+            const mail = document.getElementById('mail').value.trim();
+            const dni = document.getElementById('dni').value.trim();
+            const edad = parseInt(document.getElementById('edad').value);
+
+            // Función para mostrar errores en pantalla sin usar alert
+            const mostrarError = (mensaje) => {
+                document.getElementById('textoError').textContent = mensaje;
+                document.getElementById('mensajeError').style.display = 'block';
+                document.getElementById('mensajeExito').style.display = 'none';
+                setTimeout(() => { document.getElementById('mensajeError').style.display = 'none'; }, 4000);
+            };
+
+            if (!nombre || !apellido || !mail || !dni || isNaN(edad)) {
+                mostrarError("Por favor, completa todos los campos correctamente.");
+                return;
+            }
+
+            const edadInput = document.getElementById('edad');
+            if (edad < 18) {
+                edadInput.classList.add('is-invalid');
+                // ERROR INTENCIONAL PARA TESTING: 
+                // Se comenta el 'return;' para que la petición viaje al backend 
+                // y podamos probar la respuesta HTTP 400 que envía el servidor.
+                // return; 
+            } else {
+                edadInput.classList.remove('is-invalid');
+            }
+
+            // Crear el objeto usuario
+            const usuario = {
+                nombre: nombre,
+                apellido: apellido,
+                mail: mail,
+                dni: dni,
+                edad: edad,
+                fechaRegistro: new Date().toISOString()
+            };
+
+            // Enviar datos al servidor Python
+            try {
+                const response = await fetch('/guardar_registro', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(usuario)
+                });
+
+                if (response.ok) {
+                    // Mostrar mensaje de éxito
+                    document.getElementById('mensajeExito').style.display = 'block';
+                    document.getElementById('registroForm').reset();
+                    
+                    // Ocultar el mensaje después de 3 segundos
+                    setTimeout(() => {
+                        document.getElementById('mensajeExito').style.display = 'none';
+                    }, 3000);
+                } else {
+                    // Se agrega el código de estado para verificar el testing de errores (Ej: 400)
+                    mostrarError("Error HTTP devuelto por el servidor: " + response.status);
+                }
+            } catch (error) {
+                console.error("Error:", error);
+                mostrarError("Error de conexión. Asegúrate de estar corriendo figusapp.py.");
+            }
+        });
+
+        function iniciar() {
+            window.location.href = 'login.html';
+        }
+    </script>
+</body>
+
+</html>

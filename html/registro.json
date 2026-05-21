@@ -1,0 +1,18 @@
+[
+    {
+        "nombre": "a",
+        "apellido": "23",
+        "mail": "123",
+        "dni": "123",
+        "edad": 20,
+        "fechaRegistro": "2026-05-21T00:26:27.678Z"
+    },
+    {
+        "nombre": "q",
+        "apellido": "q",
+        "mail": "q",
+        "dni": "2",
+        "edad": 20,
+        "fechaRegistro": "2026-05-21T00:37:55.359Z"
+    }
+]

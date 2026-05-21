@@ -1,0 +1,155 @@
+/* Variables y reseteo basados en la imagen */
+:root {
+    --primary-blue: #14345c; /* Azul oscuro del texto Figus */
+    --primary-green: #3ca952; /* Verde del texto APP */
+    --green-hover: #328c44;
+    --bg-light: #f8fafc;
+    --glass-bg: rgba(255, 255, 255, 0.85); /* Fondo blanco semitransparente */
+    --glass-border: rgba(20, 52, 92, 0.15); /* Borde sutil azul oscuro */
+}
+
+body {
+    margin: 0;
+    font-family: 'Outfit', sans-serif;
+    /* Fondo claro que hace juego con el fondo de la imagen */
+    background: radial-gradient(circle at top, #ffffff, #f1f5f9, #e2e8f0);
+    background-size: cover;
+    background-attachment: fixed;
+    color: var(--primary-blue);
+}
+
+/* Contenedor Glassmorphism adaptado a modo claro */
+.glass-card {
+    background: var(--glass-bg);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid var(--glass-border);
+    width: 100%;
+    max-width: 550px;
+    box-shadow: 0 20px 40px -10px rgba(20, 52, 92, 0.15);
+    /* Animación de entrada suave */
+    animation: fadeIn 0.8s ease-out;
+}
+
+/* Imagen del logo */
+.logo-img {
+    max-width: 280px;
+    height: auto;
+    margin-bottom: 0.5rem;
+    animation: fadeIn 1s ease-out;
+}
+
+/* Sobrescribiendo clases de Bootstrap para que no queden en blanco */
+.text-white {
+    color: var(--primary-blue) !important;
+}
+
+.text-white-50 {
+    color: #64748b !important;
+}
+
+/* Inputs Personalizados claros */
+.custom-input {
+    background-color: rgba(255, 255, 255, 0.9) !important;
+    border: 1px solid #cbd5e1 !important;
+    color: var(--primary-blue) !important;
+    transition: all 0.3s ease;
+    padding: 0.75rem 1rem;
+    border-radius: 0.5rem;
+    font-weight: 500;
+}
+
+.custom-input:focus {
+    background-color: #ffffff !important;
+    border-color: var(--primary-green) !important;
+    box-shadow: 0 0 0 0.25rem rgba(60, 169, 82, 0.2) !important;
+}
+
+.custom-input::placeholder {
+    color: #94a3b8;
+    font-weight: 400;
+}
+
+/* Ocultar flechas del input number */
+.custom-input[type="number"]::-webkit-inner-spin-button, 
+.custom-input[type="number"]::-webkit-outer-spin-button { 
+  -webkit-appearance: none;
+  appearance: none;
+  margin: 0; 
+}
+.custom-input[type="number"] {
+  -moz-appearance: textfield;
+  appearance: textfield;
+}
+
+/* Botón de Registro Principal verde */
+.btn-registro {
+    background-color: var(--primary-green);
+    color: #ffffff;
+    border: none;
+    padding: 0.8rem;
+    border-radius: 0.5rem;
+    transition: all 0.3s ease;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    font-weight: bold;
+}
+
+.btn-registro:hover {
+    background-color: var(--green-hover);
+    color: #ffffff;
+    transform: translateY(-2px);
+    box-shadow: 0 10px 20px -5px rgba(60, 169, 82, 0.4);
+}
+
+.btn-registro:active {
+    transform: translateY(0);
+}
+
+/* Enlaces Inferiores */
+.hover-link {
+    color: var(--primary-green) !important;
+    transition: color 0.3s ease;
+}
+
+.hover-link:hover {
+    color: var(--primary-blue) !important;
+}
+
+/* Estilos de Validación de edad */
+.is-invalid {
+    border-color: #ef4444 !important;
+    background-image: none !important; 
+}
+
+.invalid-feedback {
+    display: none;
+    color: #ef4444;
+    font-size: 0.875em;
+    margin-top: 0.35rem;
+    font-weight: 600;
+}
+
+.is-invalid ~ .invalid-feedback {
+    display: block;
+    animation: shake 0.4s ease-in-out;
+}
+
+/* Animaciones Keyframes */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-5px); }
+    50% { transform: translateX(5px); }
+    75% { transform: translateX(-5px); }
+}
