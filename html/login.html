@@ -107,13 +107,17 @@
                 if (response.ok) {
                     // Mostrar mensaje de éxito
                     document.getElementById('mensajeExito').style.display = 'block';
+                    
+                    // Almacenamos el DNI y los datos del usuario en localStorage para la persistencia
+                    localStorage.setItem('usuario_figus', JSON.stringify(data.usuario));
+                    localStorage.setItem('dni_figus', data.usuario.dni);
+
                     document.getElementById('loginForm').reset();
 
-                    // Simulación de ingreso exitoso
+                    // Redirección al álbum de colección
                     setTimeout(() => {
-                        alert("¡Sesión iniciada con éxito! (Aquí iría el redireccionamiento al Home del álbum)");
-                        document.getElementById('mensajeExito').style.display = 'none';
-                    }, 1500);
+                        window.location.href = '/coleccion.html';
+                    }, 1200);
                 } else {
                     // Mostrar el error retornado por el servidor (ej: 401 Unauthorized)
                     mostrarError(data.error || "Error de inicio de sesión.");

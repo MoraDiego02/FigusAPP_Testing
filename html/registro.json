@@ -22,5 +22,14 @@
         "dni": "12345678",
         "edad": 20,
         "fechaRegistro": "2026-05-21T17:48:19.369Z"
+    },
+    {
+        "nombre": "Diego",
+        "apellido": "Mora",
+        "mail": "diego123@gmail.com",
+        "dni": "11223344",
+        "edad": 20,
+        "password": "12345678",
+        "fechaRegistro": "2026-05-28T18:18:34.847Z"
     }
 ]

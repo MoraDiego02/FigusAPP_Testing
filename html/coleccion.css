@@ -1,0 +1,293 @@
+/* Estilos de Colección unificados con registro y login */
+
+.navbar {
+    background: rgba(255, 255, 255, 0.8) !important;
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--glass-border) !important;
+}
+
+.coleccion-container {
+    max-width: 1400px;
+    width: 95%;
+    margin: 2rem auto;
+    animation: fadeIn 0.6s ease-out;
+}
+
+/* KPI Cards con diseño Glassmorphic del registro */
+.kpi-card {
+    background: var(--glass-bg);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid var(--glass-border);
+    border-radius: 1rem;
+    padding: 1.5rem;
+    box-shadow: 0 10px 30px rgba(20, 52, 92, 0.05);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.kpi-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 35px rgba(20, 52, 92, 0.1);
+}
+
+.kpi-title {
+    font-size: 0.875rem;
+    color: #64748b;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.kpi-value {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--primary-blue);
+}
+
+/* Tarjeta de filtros Glassmorphic */
+.search-filter-card {
+    background: var(--glass-bg);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid var(--glass-border);
+    border-radius: 1rem;
+    box-shadow: 0 10px 25px rgba(20, 52, 92, 0.04);
+}
+
+/* Inputs de Filtro */
+.search-filter-card .custom-input {
+    background-color: rgba(255, 255, 255, 0.9) !important;
+    border: 1px solid #cbd5e1 !important;
+    color: var(--primary-blue) !important;
+    border-radius: 0.5rem;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.search-filter-card .custom-input:focus {
+    background-color: #ffffff !important;
+    border-color: var(--primary-green) !important;
+    box-shadow: 0 0 0 0.25rem rgba(60, 169, 82, 0.2) !important;
+}
+
+.sticker-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+/* Diseños de Figuras Premium */
+.sticker-card {
+    background: #ffffff;
+    border-radius: 0.75rem;
+    border: 2px solid #e2e8f0;
+    padding: 0.75rem;
+    text-align: center;
+    position: relative;
+    transition: all 0.3s ease;
+    user-select: none;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    min-height: 175px;
+}
+
+.sticker-card.faltante {
+    background: #f1f5f9;
+    border-style: dashed;
+    opacity: 0.7;
+}
+
+.sticker-card.obtenida {
+    border-color: var(--primary-blue);
+    box-shadow: 0 4px 12px rgba(20, 52, 92, 0.08);
+    background: radial-gradient(circle at top right, #ffffff, #f8fafc);
+}
+
+.sticker-card.repetida {
+    border-color: #f59e0b;
+    box-shadow: 0 4px 15px rgba(245, 158, 11, 0.15);
+    background: radial-gradient(circle at top right, #fffdf5, #fffbeb);
+}
+
+.sticker-num {
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: #64748b;
+    margin-bottom: 0.25rem;
+}
+
+.sticker-card.obtenida .sticker-num {
+    color: var(--primary-blue);
+}
+
+.sticker-card.repetida .sticker-num {
+    color: #d97706;
+}
+
+.sticker-name {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--primary-blue);
+    line-height: 1.2;
+    margin-bottom: 0.5rem;
+    word-wrap: break-word;
+}
+
+.sticker-pos {
+    font-size: 0.7rem;
+    font-weight: 600;
+    padding: 0.15rem 0.4rem;
+    border-radius: 20px;
+    background: #e2e8f0;
+    color: #475569;
+    display: inline-block;
+    margin-bottom: 0.5rem;
+}
+
+.sticker-card.obtenida .sticker-pos {
+    background: rgba(20, 52, 92, 0.08);
+    color: var(--primary-blue);
+}
+
+.sticker-card.repetida .sticker-pos {
+    background: rgba(245, 158, 11, 0.15);
+    color: #b45309;
+}
+
+/* Botones de Control */
+.controls {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+    margin-top: auto;
+}
+
+.btn-ctrl {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    border: none;
+    background: #cbd5e1;
+    color: #334155;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 0.9rem;
+    transition: all 0.2s ease;
+}
+
+.btn-ctrl:hover {
+    transform: scale(1.15);
+}
+
+.btn-ctrl.btn-plus {
+    background: var(--primary-green);
+    color: white;
+}
+
+.btn-ctrl.btn-plus:hover {
+    background: var(--green-hover);
+}
+
+.btn-ctrl.btn-minus {
+    background: #ef4444;
+    color: white;
+}
+
+.btn-ctrl.btn-minus:hover {
+    background: #dc2626;
+}
+
+/* Badge Repetidas */
+.badge-rep {
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    background: #f59e0b;
+    color: white;
+    font-size: 0.75rem;
+    font-weight: 700;
+    padding: 0.25rem 0.5rem;
+    border-radius: 10px;
+    box-shadow: 0 2px 6px rgba(245, 158, 11, 0.4);
+    animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+/* Estilos de Acordeón Glassmorphic */
+.accordion-item {
+    background: var(--glass-bg) !important;
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid var(--glass-border) !important;
+}
+
+.accordion-button {
+    color: var(--primary-blue) !important;
+    font-weight: 600;
+    background-color: transparent !important;
+    transition: all 0.3s ease;
+}
+
+.accordion-button:not(.collapsed) {
+    background-color: rgba(60, 169, 82, 0.15) !important;
+    color: var(--primary-blue) !important;
+}
+
+.accordion-button:focus {
+    box-shadow: 0 0 0 0.25rem rgba(60, 169, 82, 0.2) !important;
+}
+
+/* Barra de Progreso */
+.progress-bar-container {
+    width: 100%;
+    height: 10px;
+    background-color: #e2e8f0;
+    border-radius: 5px;
+    overflow: hidden;
+    margin-top: 0.5rem;
+}
+
+.progress-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--primary-green), #6ee7b7);
+    border-radius: 5px;
+    transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes popIn {
+    from { transform: scale(0); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+}
+
+/* Estilo para figuritas FWC Especiales */
+.sticker-card.especial {
+    border-color: #818cf8;
+    background: radial-gradient(circle at top right, #fff, #f5f3ff);
+}
+.sticker-card.especial.obtenida {
+    box-shadow: 0 4px 15px rgba(129, 140, 248, 0.2);
+    border-color: #6366f1;
+}
+
+/* Banderas SVG */
+.flag-img {
+    transition: transform 0.25s ease;
+    border: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.flag-img:hover {
+    transform: scale(1.2);
+    z-index: 10;
+}
+
+.group-flags-container {
+    border-color: var(--glass-border) !important;
+    background-color: rgba(255, 255, 255, 0.6) !important;
+    backdrop-filter: blur(4px);
+    box-shadow: inset 0 1px 2px rgba(0,0,0,0.05);
+}

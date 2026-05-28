@@ -136,14 +136,20 @@
                 });
 
                 if (response.ok) {
+                    const data = await response.json();
                     // Mostrar mensaje de éxito
                     document.getElementById('mensajeExito').style.display = 'block';
+                    
+                    // Almacenamos el DNI y los datos del usuario en localStorage para auto-login
+                    localStorage.setItem('usuario_figus', JSON.stringify(data.usuario));
+                    localStorage.setItem('dni_figus', data.usuario.dni);
+
                     document.getElementById('registroForm').reset();
                     
-                    // Ocultar el mensaje después de 3 segundos
+                    // Redirigir al album de coleccion
                     setTimeout(() => {
-                        document.getElementById('mensajeExito').style.display = 'none';
-                    }, 3000);
+                        window.location.href = '/coleccion.html';
+                    }, 1500);
                 } else {
                     try {
                         const data = await response.json();

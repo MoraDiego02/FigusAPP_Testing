@@ -7,7 +7,12 @@ from pydantic import BaseModel, Field
 from typing import Optional, Union, Dict, Any
 
 # Importamos las funciones con tu lógica desde funciones.py
-from funciones import procesar_registro, verificar_login
+from funciones import (
+    procesar_registro, 
+    verificar_login, 
+    obtener_coleccion_usuario, 
+    actualizar_figurita_usuario
+)
 
 PORT = 8080
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -74,6 +79,11 @@ class LoginRequest(BaseModel):
         description="Contraseña del usuario", 
         json_schema_extra={"example": "secreto123"}
     )
+
+class ActualizarFiguritaRequest(BaseModel):
+    dni: str = Field(..., description="DNI del usuario", example="12345678")
+    numero_figurita: str = Field(..., description="Código oficial de la figurita", example="ARG10")
+    accion: str = Field(..., description="Acción a realizar: 'incrementar' o 'decrementar'", example="incrementar")
 
 # ----------------- Modelos de Datos para Respuestas (Response Models) -----------------
 
@@ -172,6 +182,53 @@ async def login(login_data: LoginRequest):
         respuesta = {"error": resultado["error"]}
         
     return JSONResponse(status_code=resultado["code"], content=respuesta)
+
+
+@app.get(
+    "/api/coleccion/{dni}",
+    summary="Obtener Colección del Usuario",
+    description="Retorna el inventario completo de figuritas (incluyendo especiales y todos los grupos del A al L) junto con métricas agregadas (faltantes, repetidas y completitud) para un DNI dado.",
+    responses={
+        200: {
+            "description": "Colección recuperada correctamente con estadísticas avanzadas."
+        },
+        500: {
+            "model": ErrorResponse,
+            "description": "Error Interno del Servidor - Catálogo base ausente."
+        }
+    }
+)
+async def get_coleccion(dni: str):
+    resultado = obtener_coleccion_usuario(dni)
+    if resultado["success"]:
+        return JSONResponse(status_code=200, content=resultado["data"])
+    return JSONResponse(status_code=resultado["code"], content={"error": resultado["error"]})
+
+
+@app.post(
+    "/api/coleccion/actualizar",
+    summary="Actualizar Cantidad de Cromo",
+    description="Incrementa o decrementa en una unidad la cantidad registrada de un cromo específico en el álbum del usuario.",
+    responses={
+        200: {
+            "description": "Cromo actualizado correctamente."
+        },
+        422: {
+            "model": ErrorResponse,
+            "description": "Petición Incorrecta - Faltan campos requeridos o acción inválida."
+        },
+        500: {
+            "model": ErrorResponse,
+            "description": "Error al persistir cambios."
+        }
+    }
+)
+async def post_actualizar_figurita(req: ActualizarFiguritaRequest):
+    resultado = actualizar_figurita_usuario(req.dni, req.numero_figurita, req.accion)
+    if resultado["success"]:
+        return JSONResponse(status_code=200, content=resultado["data"])
+    return JSONResponse(status_code=resultado["code"], content={"error": resultado["error"]})
+
 
 # Montamos la carpeta html para servir los archivos estáticos (HTML, CSS, imágenes, etc.)
 # IMPORTANTE: Se monta al final para que no interfiera con las rutas de la API.

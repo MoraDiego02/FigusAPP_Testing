@@ -1,0 +1,497 @@
+{
+  "album": {
+    "titulo": "Copa Mundial de la FIFA 2026™ - Álbum Panini Oficial",
+    "edicion": "FIFA World Cup 2026",
+    "sedes": ["Estados Unidos", "México", "Canadá"],
+    "fecha_torneo": "11 de junio - 19 de julio de 2026",
+    "total_figuritas": 980,
+    "total_paginas": 112,
+    "figuritas_por_sobre": 7,
+    "selecciones": 48,
+    "grupos": 12
+  },
+
+  "secciones_especiales": {
+    "codigo": "FWC",
+    "nombre": "Specials / FIFA World Cup",
+    "descripcion": "Figuritas especiales del torneo: logo oficial, portadas, imágenes FIFA",
+    "total_figuritas": 20,
+    "figuritas": [
+      { "numero": "00",   "descripcion": "Figurita especial de apertura del álbum" },
+      { "numero": "FW1",  "descripcion": "Logo oficial Copa Mundial FIFA 2026" },
+      { "numero": "FW2",  "descripcion": "Portada / Imagen oficial del torneo" },
+      { "numero": "FW3",  "descripcion": "Trofeo FIFA World Cup" },
+      { "numero": "FW4",  "descripcion": "Estadio AT&T Stadium (Dallas, EE.UU.)" },
+      { "numero": "FW5",  "descripcion": "Estadio MetLife Stadium (Nueva York, EE.UU.)" },
+      { "numero": "FW6",  "descripcion": "Estadio SoFi Stadium (Los Ángeles, EE.UU.)" },
+      { "numero": "FW7",  "descripcion": "Estadio Levi's Stadium (San Francisco, EE.UU.)" },
+      { "numero": "FW8",  "descripcion": "Estadio Arrowhead Stadium (Kansas City, EE.UU.)" },
+      { "numero": "FW9",  "descripcion": "Estadio Lincoln Financial Field (Filadelfia, EE.UU.)" },
+      { "numero": "FW10", "descripcion": "Estadio Allegiant Stadium (Las Vegas, EE.UU.)" },
+      { "numero": "FW11", "descripcion": "Estadio Seattle (Seattle, EE.UU.)" },
+      { "numero": "FW12", "descripcion": "Estadio Gillette Stadium (Boston, EE.UU.)" },
+      { "numero": "FW13", "descripcion": "Estadio Rose Bowl (Los Ángeles, EE.UU.)" },
+      { "numero": "FW14", "descripcion": "Estadio BMO Field (Toronto, Canadá)" },
+      { "numero": "FW15", "descripcion": "Estadio BC Place (Vancouver, Canadá)" },
+      { "numero": "FW16", "descripcion": "Estadio Azteca (Ciudad de México, México)" },
+      { "numero": "FW17", "descripcion": "Estadio Guadalajara (Guadalajara, México)" },
+      { "numero": "FW18", "descripcion": "Imagen histórica / Récords del torneo" },
+      { "numero": "FW19", "descripcion": "Imagen histórica / Récords del torneo" }
+    ]
+  },
+
+  "grupos": [
+    {
+      "grupo": "A",
+      "selecciones": [
+        {
+          "pais": "República Checa",
+          "codigo": "CZE",
+          "total_figuritas": 20,
+          "figuritas": {
+            "escudo": { "numero": "CZE1", "tipo": "escudo_especial" },
+            "foto_grupal": { "numero": "CZE2", "tipo": "foto_grupal" },
+            "jugadores": [
+              { "numero": "CZE3",  "nombre": "", "posicion": "" },
+              { "numero": "CZE4",  "nombre": "", "posicion": "" },
+              { "numero": "CZE5",  "nombre": "", "posicion": "" },
+              { "numero": "CZE6",  "nombre": "", "posicion": "" },
+              { "numero": "CZE7",  "nombre": "", "posicion": "" },
+              { "numero": "CZE8",  "nombre": "", "posicion": "" },
+              { "numero": "CZE9",  "nombre": "", "posicion": "" },
+              { "numero": "CZE10", "nombre": "", "posicion": "" },
+              { "numero": "CZE11", "nombre": "", "posicion": "" },
+              { "numero": "CZE12", "nombre": "", "posicion": "" },
+              { "numero": "CZE13", "nombre": "", "posicion": "" },
+              { "numero": "CZE14", "nombre": "", "posicion": "" },
+              { "numero": "CZE15", "nombre": "", "posicion": "" },
+              { "numero": "CZE16", "nombre": "", "posicion": "" },
+              { "numero": "CZE17", "nombre": "", "posicion": "" },
+              { "numero": "CZE18", "nombre": "", "posicion": "" },
+              { "numero": "CZE19", "nombre": "", "posicion": "" },
+              { "numero": "CZE20", "nombre": "", "posicion": "" }
+            ]
+          }
+        },
+        {
+          "pais": "México",
+          "codigo": "MEX",
+          "total_figuritas": 20,
+          "figuritas": {
+            "escudo": { "numero": "MEX1", "tipo": "escudo_especial" },
+            "foto_grupal": { "numero": "MEX2", "tipo": "foto_grupal" },
+            "jugadores": [
+              { "numero": "MEX3",  "nombre": "", "posicion": "" },
+              { "numero": "MEX4",  "nombre": "", "posicion": "" },
+              { "numero": "MEX5",  "nombre": "", "posicion": "" },
+              { "numero": "MEX6",  "nombre": "", "posicion": "" },
+              { "numero": "MEX7",  "nombre": "", "posicion": "" },
+              { "numero": "MEX8",  "nombre": "", "posicion": "" },
+              { "numero": "MEX9",  "nombre": "", "posicion": "" },
+              { "numero": "MEX10", "nombre": "", "posicion": "" },
+              { "numero": "MEX11", "nombre": "", "posicion": "" },
+              { "numero": "MEX12", "nombre": "", "posicion": "" },
+              { "numero": "MEX13", "nombre": "", "posicion": "" },
+              { "numero": "MEX14", "nombre": "", "posicion": "" },
+              { "numero": "MEX15", "nombre": "", "posicion": "" },
+              { "numero": "MEX16", "nombre": "", "posicion": "" },
+              { "numero": "MEX17", "nombre": "", "posicion": "" },
+              { "numero": "MEX18", "nombre": "", "posicion": "" },
+              { "numero": "MEX19", "nombre": "", "posicion": "" },
+              { "numero": "MEX20", "nombre": "", "posicion": "" }
+            ]
+          }
+        },
+        {
+          "pais": "Sudáfrica",
+          "codigo": "RSA",
+          "total_figuritas": 20,
+          "figuritas": {
+            "escudo": { "numero": "RSA1", "tipo": "escudo_especial" },
+            "foto_grupal": { "numero": "RSA2", "tipo": "foto_grupal" },
+            "jugadores": [
+              { "numero": "RSA3",  "nombre": "", "posicion": "" },
+              { "numero": "RSA4",  "nombre": "", "posicion": "" },
+              { "numero": "RSA5",  "nombre": "", "posicion": "" },
+              { "numero": "RSA6",  "nombre": "", "posicion": "" },
+              { "numero": "RSA7",  "nombre": "", "posicion": "" },
+              { "numero": "RSA8",  "nombre": "", "posicion": "" },
+              { "numero": "RSA9",  "nombre": "", "posicion": "" },
+              { "numero": "RSA10", "nombre": "", "posicion": "" },
+              { "numero": "RSA11", "nombre": "", "posicion": "" },
+              { "numero": "RSA12", "nombre": "", "posicion": "" },
+              { "numero": "RSA13", "nombre": "", "posicion": "" },
+              { "numero": "RSA14", "nombre": "", "posicion": "" },
+              { "numero": "RSA15", "nombre": "", "posicion": "" },
+              { "numero": "RSA16", "nombre": "", "posicion": "" },
+              { "numero": "RSA17", "nombre": "", "posicion": "" },
+              { "numero": "RSA18", "nombre": "", "posicion": "" },
+              { "numero": "RSA19", "nombre": "", "posicion": "" },
+              { "numero": "RSA20", "nombre": "", "posicion": "" }
+            ]
+          }
+        },
+        {
+          "pais": "Corea del Sur",
+          "codigo": "KOR",
+          "total_figuritas": 20,
+          "figuritas": {
+            "escudo": { "numero": "KOR1", "tipo": "escudo_especial" },
+            "foto_grupal": { "numero": "KOR2", "tipo": "foto_grupal" },
+            "jugadores": [
+              { "numero": "KOR3",  "nombre": "", "posicion": "" },
+              { "numero": "KOR4",  "nombre": "", "posicion": "" },
+              { "numero": "KOR5",  "nombre": "", "posicion": "" },
+              { "numero": "KOR6",  "nombre": "", "posicion": "" },
+              { "numero": "KOR7",  "nombre": "", "posicion": "" },
+              { "numero": "KOR8",  "nombre": "", "posicion": "" },
+              { "numero": "KOR9",  "nombre": "", "posicion": "" },
+              { "numero": "KOR10", "nombre": "", "posicion": "" },
+              { "numero": "KOR11", "nombre": "", "posicion": "" },
+              { "numero": "KOR12", "nombre": "", "posicion": "" },
+              { "numero": "KOR13", "nombre": "", "posicion": "" },
+              { "numero": "KOR14", "nombre": "", "posicion": "" },
+              { "numero": "KOR15", "nombre": "", "posicion": "" },
+              { "numero": "KOR16", "nombre": "", "posicion": "" },
+              { "numero": "KOR17", "nombre": "", "posicion": "" },
+              { "numero": "KOR18", "nombre": "", "posicion": "" },
+              { "numero": "KOR19", "nombre": "", "posicion": "" },
+              { "numero": "KOR20", "nombre": "", "posicion": "" }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "grupo": "B",
+      "selecciones": [
+        {
+          "pais": "Bosnia y Herzegovina",
+          "codigo": "BIH",
+          "total_figuritas": 20,
+          "figuritas": {
+            "escudo": { "numero": "BIH1", "tipo": "escudo_especial" },
+            "foto_grupal": { "numero": "BIH2", "tipo": "foto_grupal" },
+            "jugadores": [
+              { "numero": "BIH3",  "nombre": "", "posicion": "" },
+              { "numero": "BIH4",  "nombre": "", "posicion": "" },
+              { "numero": "BIH5",  "nombre": "", "posicion": "" },
+              { "numero": "BIH6",  "nombre": "", "posicion": "" },
+              { "numero": "BIH7",  "nombre": "", "posicion": "" },
+              { "numero": "BIH8",  "nombre": "", "posicion": "" },
+              { "numero": "BIH9",  "nombre": "", "posicion": "" },
+              { "numero": "BIH10", "nombre": "", "posicion": "" },
+              { "numero": "BIH11", "nombre": "", "posicion": "" },
+              { "numero": "BIH12", "nombre": "", "posicion": "" },
+              { "numero": "BIH13", "nombre": "", "posicion": "" },
+              { "numero": "BIH14", "nombre": "", "posicion": "" },
+              { "numero": "BIH15", "nombre": "", "posicion": "" },
+              { "numero": "BIH16", "nombre": "", "posicion": "" },
+              { "numero": "BIH17", "nombre": "", "posicion": "" },
+              { "numero": "BIH18", "nombre": "", "posicion": "" },
+              { "numero": "BIH19", "nombre": "", "posicion": "" },
+              { "numero": "BIH20", "nombre": "", "posicion": "" }
+            ]
+          }
+        },
+        {
+          "pais": "Canadá",
+          "codigo": "CAN",
+          "total_figuritas": 20,
+          "figuritas": {
+            "escudo": { "numero": "CAN1", "tipo": "escudo_especial" },
+            "foto_grupal": { "numero": "CAN2", "tipo": "foto_grupal" },
+            "jugadores": [
+              { "numero": "CAN3",  "nombre": "", "posicion": "" },
+              { "numero": "CAN4",  "nombre": "", "posicion": "" },
+              { "numero": "CAN5",  "nombre": "", "posicion": "" },
+              { "numero": "CAN6",  "nombre": "", "posicion": "" },
+              { "numero": "CAN7",  "nombre": "", "posicion": "" },
+              { "numero": "CAN8",  "nombre": "", "posicion": "" },
+              { "numero": "CAN9",  "nombre": "", "posicion": "" },
+              { "numero": "CAN10", "nombre": "", "posicion": "" },
+              { "numero": "CAN11", "nombre": "", "posicion": "" },
+              { "numero": "CAN12", "nombre": "", "posicion": "" },
+              { "numero": "CAN13", "nombre": "", "posicion": "" },
+              { "numero": "CAN14", "nombre": "", "posicion": "" },
+              { "numero": "CAN15", "nombre": "", "posicion": "" },
+              { "numero": "CAN16", "nombre": "", "posicion": "" },
+              { "numero": "CAN17", "nombre": "", "posicion": "" },
+              { "numero": "CAN18", "nombre": "", "posicion": "" },
+              { "numero": "CAN19", "nombre": "", "posicion": "" },
+              { "numero": "CAN20", "nombre": "", "posicion": "" }
+            ]
+          }
+        },
+        {
+          "pais": "Catar",
+          "codigo": "QAT",
+          "total_figuritas": 20,
+          "figuritas": {
+            "escudo": { "numero": "QAT1", "tipo": "escudo_especial" },
+            "foto_grupal": { "numero": "QAT2", "tipo": "foto_grupal" },
+            "jugadores": [
+              { "numero": "QAT3",  "nombre": "", "posicion": "" },
+              { "numero": "QAT4",  "nombre": "", "posicion": "" },
+              { "numero": "QAT5",  "nombre": "", "posicion": "" },
+              { "numero": "QAT6",  "nombre": "", "posicion": "" },
+              { "numero": "QAT7",  "nombre": "", "posicion": "" },
+              { "numero": "QAT8",  "nombre": "", "posicion": "" },
+              { "numero": "QAT9",  "nombre": "", "posicion": "" },
+              { "numero": "QAT10", "nombre": "", "posicion": "" },
+              { "numero": "QAT11", "nombre": "", "posicion": "" },
+              { "numero": "QAT12", "nombre": "", "posicion": "" },
+              { "numero": "QAT13", "nombre": "", "posicion": "" },
+              { "numero": "QAT14", "nombre": "", "posicion": "" },
+              { "numero": "QAT15", "nombre": "", "posicion": "" },
+              { "numero": "QAT16", "nombre": "", "posicion": "" },
+              { "numero": "QAT17", "nombre": "", "posicion": "" },
+              { "numero": "QAT18", "nombre": "", "posicion": "" },
+              { "numero": "QAT19", "nombre": "", "posicion": "" },
+              { "numero": "QAT20", "nombre": "", "posicion": "" }
+            ]
+          }
+        },
+        {
+          "pais": "Suiza",
+          "codigo": "SUI",
+          "total_figuritas": 20,
+          "figuritas": {
+            "escudo": { "numero": "SUI1", "tipo": "escudo_especial" },
+            "foto_grupal": { "numero": "SUI2", "tipo": "foto_grupal" },
+            "jugadores": [
+              { "numero": "SUI3",  "nombre": "", "posicion": "" },
+              { "numero": "SUI4",  "nombre": "", "posicion": "" },
+              { "numero": "SUI5",  "nombre": "", "posicion": "" },
+              { "numero": "SUI6",  "nombre": "", "posicion": "" },
+              { "numero": "SUI7",  "nombre": "", "posicion": "" },
+              { "numero": "SUI8",  "nombre": "", "posicion": "" },
+              { "numero": "SUI9",  "nombre": "", "posicion": "" },
+              { "numero": "SUI10", "nombre": "", "posicion": "" },
+              { "numero": "SUI11", "nombre": "", "posicion": "" },
+              { "numero": "SUI12", "nombre": "", "posicion": "" },
+              { "numero": "SUI13", "nombre": "", "posicion": "" },
+              { "numero": "SUI14", "nombre": "", "posicion": "" },
+              { "numero": "SUI15", "nombre": "", "posicion": "" },
+              { "numero": "SUI16", "nombre": "", "posicion": "" },
+              { "numero": "SUI17", "nombre": "", "posicion": "" },
+              { "numero": "SUI18", "nombre": "", "posicion": "" },
+              { "numero": "SUI19", "nombre": "", "posicion": "" },
+              { "numero": "SUI20", "nombre": "", "posicion": "" }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "grupo": "C",
+      "selecciones": [
+        {
+          "pais": "Brasil",
+          "codigo": "BRA",
+          "total_figuritas": 20,
+          "figuritas": {
+            "escudo": { "numero": "BRA1", "tipo": "escudo_especial" },
+            "foto_grupal": { "numero": "BRA2", "tipo": "foto_grupal" },
+            "jugadores": [
+              { "numero": "BRA3",  "nombre": "", "posicion": "" },
+              { "numero": "BRA4",  "nombre": "", "posicion": "" },
+              { "numero": "BRA5",  "nombre": "", "posicion": "" },
+              { "numero": "BRA6",  "nombre": "", "posicion": "" },
+              { "numero": "BRA7",  "nombre": "", "posicion": "" },
+              { "numero": "BRA8",  "nombre": "", "posicion": "" },
+              { "numero": "BRA9",  "nombre": "", "posicion": "" },
+              { "numero": "BRA10", "nombre": "", "posicion": "" },
+              { "numero": "BRA11", "nombre": "", "posicion": "" },
+              { "numero": "BRA12", "nombre": "", "posicion": "" },
+              { "numero": "BRA13", "nombre": "", "posicion": "" },
+              { "numero": "BRA14", "nombre": "", "posicion": "" },
+              { "numero": "BRA15", "nombre": "", "posicion": "" },
+              { "numero": "BRA16", "nombre": "", "posicion": "" },
+              { "numero": "BRA17", "nombre": "", "posicion": "" },
+              { "numero": "BRA18", "nombre": "", "posicion": "" },
+              { "numero": "BRA19", "nombre": "", "posicion": "" },
+              { "numero": "BRA20", "nombre": "", "posicion": "" }
+            ]
+          }
+        },
+        {
+          "pais": "Haití",
+          "codigo": "HAI",
+          "total_figuritas": 20,
+          "figuritas": {
+            "escudo": { "numero": "HAI1", "tipo": "escudo_especial" },
+            "foto_grupal": { "numero": "HAI2", "tipo": "foto_grupal" },
+            "jugadores": [
+              { "numero": "HAI3",  "nombre": "", "posicion": "" },
+              { "numero": "HAI4",  "nombre": "", "posicion": "" },
+              { "numero": "HAI5",  "nombre": "", "posicion": "" },
+              { "numero": "HAI6",  "nombre": "", "posicion": "" },
+              { "numero": "HAI7",  "nombre": "", "posicion": "" },
+              { "numero": "HAI8",  "nombre": "", "posicion": "" },
+              { "numero": "HAI9",  "nombre": "", "posicion": "" },
+              { "numero": "HAI10", "nombre": "", "posicion": "" },
+              { "numero": "HAI11", "nombre": "", "posicion": "" },
+              { "numero": "HAI12", "nombre": "", "posicion": "" },
+              { "numero": "HAI13", "nombre": "", "posicion": "" },
+              { "numero": "HAI14", "nombre": "", "posicion": "" },
+              { "numero": "HAI15", "nombre": "", "posicion": "" },
+              { "numero": "HAI16", "nombre": "", "posicion": "" },
+              { "numero": "HAI17", "nombre": "", "posicion": "" },
+              { "numero": "HAI18", "nombre": "", "posicion": "" },
+              { "numero": "HAI19", "nombre": "", "posicion": "" },
+              { "numero": "HAI20", "nombre": "", "posicion": "" }
+            ]
+          }
+        },
+        {
+          "pais": "Marruecos",
+          "codigo": "MAR",
+          "total_figuritas": 20,
+          "figuritas": {
+            "escudo": { "numero": "MAR1", "tipo": "escudo_especial" },
+            "foto_grupal": { "numero": "MAR2", "tipo": "foto_grupal" },
+            "jugadores": [
+              { "numero": "MAR3",  "nombre": "", "posicion": "" },
+              { "numero": "MAR4",  "nombre": "", "posicion": "" },
+              { "numero": "MAR5",  "nombre": "", "posicion": "" },
+              { "numero": "MAR6",  "nombre": "", "posicion": "" },
+              { "numero": "MAR7",  "nombre": "", "posicion": "" },
+              { "numero": "MAR8",  "nombre": "", "posicion": "" },
+              { "numero": "MAR9",  "nombre": "", "posicion": "" },
+              { "numero": "MAR10", "nombre": "", "posicion": "" },
+              { "numero": "MAR11", "nombre": "", "posicion": "" },
+              { "numero": "MAR12", "nombre": "", "posicion": "" },
+              { "numero": "MAR13", "nombre": "", "posicion": "" },
+              { "numero": "MAR14", "nombre": "", "posicion": "" },
+              { "numero": "MAR15", "nombre": "", "posicion": "" },
+              { "numero": "MAR16", "nombre": "", "posicion": "" },
+              { "numero": "MAR17", "nombre": "", "posicion": "" },
+              { "numero": "MAR18", "nombre": "", "posicion": "" },
+              { "numero": "MAR19", "nombre": "", "posicion": "" },
+              { "numero": "MAR20", "nombre": "", "posicion": "" }
+            ]
+          }
+        },
+        {
+          "pais": "Escocia",
+          "codigo": "SCO",
+          "total_figuritas": 20,
+          "figuritas": {
+            "escudo": { "numero": "SCO1", "tipo": "escudo_especial" },
+            "foto_grupal": { "numero": "SCO2", "tipo": "foto_grupal" },
+            "jugadores": [
+              { "numero": "SCO3",  "nombre": "", "posicion": "" },
+              { "numero": "SCO4",  "nombre": "", "posicion": "" },
+              { "numero": "SCO5",  "nombre": "", "posicion": "" },
+              { "numero": "SCO6",  "nombre": "", "posicion": "" },
+              { "numero": "SCO7",  "nombre": "", "posicion": "" },
+              { "numero": "SCO8",  "nombre": "", "posicion": "" },
+              { "numero": "SCO9",  "nombre": "", "posicion": "" },
+              { "numero": "SCO10", "nombre": "", "posicion": "" },
+              { "numero": "SCO11", "nombre": "", "posicion": "" },
+              { "numero": "SCO12", "nombre": "", "posicion": "" },
+              { "numero": "SCO13", "nombre": "", "posicion": "" },
+              { "numero": "SCO14", "nombre": "", "posicion": "" },
+              { "numero": "SCO15", "nombre": "", "posicion": "" },
+              { "numero": "SCO16", "nombre": "", "posicion": "" },
+              { "numero": "SCO17", "nombre": "", "posicion": "" },
+              { "numero": "SCO18", "nombre": "", "posicion": "" },
+              { "numero": "SCO19", "nombre": "", "posicion": "" },
+              { "numero": "SCO20", "nombre": "", "posicion": "" }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "grupo": "D",
+      "selecciones": [
+        { "pais": "Australia",     "codigo": "AUS" },
+        { "pais": "Paraguay",      "codigo": "PAR" },
+        { "pais": "Turquía",       "codigo": "TUR" },
+        { "pais": "Estados Unidos","codigo": "USA" }
+      ]
+    },
+    {
+      "grupo": "E",
+      "selecciones": [
+        { "pais": "Curazao",         "codigo": "CUW" },
+        { "pais": "Ecuador",         "codigo": "ECU" },
+        { "pais": "Alemania",        "codigo": "GER" },
+        { "pais": "Costa de Marfil", "codigo": "CIV" }
+      ]
+    },
+    {
+      "grupo": "F",
+      "selecciones": [
+        { "pais": "Japón",         "codigo": "JAP" },
+        { "pais": "Países Bajos",  "codigo": "NED" },
+        { "pais": "Suecia",        "codigo": "SWE" },
+        { "pais": "Túnez",         "codigo": "TUN" }
+      ]
+    },
+    {
+      "grupo": "G",
+      "selecciones": [
+        { "pais": "Bélgica",       "codigo": "BEL" },
+        { "pais": "Egipto",        "codigo": "EGY" },
+        { "pais": "Irán",          "codigo": "IRN" },
+        { "pais": "Nueva Zelanda", "codigo": "NZL" }
+      ]
+    },
+    {
+      "grupo": "H",
+      "selecciones": [
+        { "pais": "Cabo Verde",    "codigo": "CPV" },
+        { "pais": "Arabia Saudita","codigo": "KSA" },
+        { "pais": "España",        "codigo": "ESP" },
+        { "pais": "Uruguay",       "codigo": "URU" }
+      ]
+    },
+    {
+      "grupo": "I",
+      "selecciones": [
+        { "pais": "Francia",  "codigo": "FRA" },
+        { "pais": "Irak",     "codigo": "IRQ" },
+        { "pais": "Noruega",  "codigo": "NOR" },
+        { "pais": "Senegal",  "codigo": "SEN" }
+      ]
+    },
+    {
+      "grupo": "J",
+      "selecciones": [
+        { "pais": "Argelia",   "codigo": "ALG" },
+        { "pais": "Argentina", "codigo": "ARG" },
+        { "pais": "Austria",   "codigo": "AUT" },
+        { "pais": "Jordania",  "codigo": "JOR" }
+      ]
+    },
+    {
+      "grupo": "K",
+      "selecciones": [
+        { "pais": "Colombia",    "codigo": "COL" },
+        { "pais": "RD del Congo","codigo": "COD" },
+        { "pais": "Portugal",    "codigo": "POR" },
+        { "pais": "Uzbekistán",  "codigo": "UZB" }
+      ]
+    },
+    {
+      "grupo": "L",
+      "selecciones": [
+        { "pais": "Croacia",   "codigo": "CRO" },
+        { "pais": "Inglaterra","codigo": "ENG" },
+        { "pais": "Ghana",     "codigo": "GHA" },
+        { "pais": "Panamá",    "codigo": "PAN" }
+      ]
+    }
+  ],
+
+  "_notas": {
+    "estructura_por_seleccion": "Cada selección tiene 20 figuritas: 1 escudo (foil/especial), 1 foto grupal + 18 jugadores",
+    "numeracion": "La numeración real del álbum físico es correlativa (ej: CZE 1-20). Los grupos D al L usan la misma estructura que A-C; se omitió el detalle de jugadores para brevedad.",
+    "figuritas_extra": "Existen 20 Panini Extra Stickers exclusivos (bronce, plata, oro, regular) que se insertan aleatoriamente aprox. 1 cada 100 sobres y NO tienen espacio fijo en el álbum.",
+    "posiciones": "Completar con: PO (Portero), DF (Defensa), MC (Mediocampista), DL (Delantero)",
+    "fuente": "Datos basados en álbum oficial Panini FIFA World Cup 2026™, lanzado el 30 de abril de 2026"
+  }
+}

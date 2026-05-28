@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FigusAPP - Mi Colección</title>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Custom CSS (Extendemos la estética del registro) -->
+    <link rel="stylesheet" href="registro.css">
+    <!-- Custom CSS for collection -->
+    <link rel="stylesheet" href="coleccion.css">
+    <!-- Icons (Bootstrap Icons) -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.2/font/bootstrap-icons.min.css">
+</head>
+<body>
+
+    <!-- Header Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom shadow-sm">
+        <div class="container-fluid px-4">
+            <a class="navbar-brand d-flex align-items-center" href="#">
+                <img src="figusappfinal.png" alt="FigusAPP Logo" style="height: 38px;">
+            </a>
+            <div class="d-flex align-items-center gap-3">
+                <span class="text-secondary fw-semibold d-none d-md-inline" id="userInfo">Usuario</span>
+                <button onclick="cerrarSesion()" class="btn btn-outline-danger btn-sm fw-bold rounded-pill px-3">
+                    <i class="bi bi-box-arrow-right"></i> Salir
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Contenedor Principal de la Colección -->
+    <div class="coleccion-container">
+        
+        <!-- Dashboard de Estadísticas (RF-CO-04) -->
+        <div class="row g-3 mb-4">
+            <div class="col-md-3 col-sm-6">
+                <div class="kpi-card text-center">
+                    <div class="kpi-title">Completado</div>
+                    <div class="kpi-value" id="valProgreso">0%</div>
+                    <div class="progress-bar-container">
+                        <div class="progress-bar-fill" id="fillProgreso" style="width: 0%;"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <div class="kpi-card text-center">
+                    <div class="kpi-title">Obtenidas Únicas</div>
+                    <div class="kpi-value text-success" id="valObtenidas">0</div>
+                    <div class="text-secondary-50" style="font-size: 0.8rem;" id="valTotalAlbum">de 980 figuritas</div>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <div class="kpi-card text-center">
+                    <div class="kpi-title">Faltantes</div>
+                    <div class="kpi-value text-danger" id="valFaltantes">0</div>
+                    <div class="text-secondary-50" style="font-size: 0.8rem;">¡Casi llegamos!</div>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <div class="kpi-card text-center">
+                    <div class="kpi-title">Total Repetidas</div>
+                    <div class="kpi-value text-warning" id="valRepetidas">0</div>
+                    <div class="text-secondary-50" style="font-size: 0.8rem;">Listas para canjear</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Barra de Herramientas, Filtros y Búsqueda (RF-CO-05) -->
+        <div class="search-filter-card p-3 mb-4 shadow-sm">
+            <div class="row g-3 align-items-center">
+                <!-- Buscador de Texto -->
+                <div class="col-lg-4 col-md-6">
+                    <div class="input-group">
+                        <span class="input-group-text bg-white border-end-0 text-muted"><i class="bi bi-search"></i></span>
+                        <input type="text" id="buscadorText" class="form-control border-start-0 custom-input py-2" 
+                               placeholder="Buscar por número o nombre (ej: ARG10, Messi)..." oninput="aplicarFiltros()">
+                    </div>
+                </div>
+                <!-- Filtro de Estado -->
+                <div class="col-lg-4 col-md-6">
+                    <div class="d-flex align-items-center gap-2">
+                        <label for="filtroEstado" class="text-nowrap fw-bold text-secondary mb-0">Estado:</label>
+                        <select id="filtroEstado" class="form-select custom-input" onchange="aplicarFiltros()">
+                            <option value="todos">Mostrar Todas</option>
+                            <option value="obtenidas">Obtenidas</option>
+                            <option value="faltantes">Faltantes</option>
+                            <option value="repetidas">Repetidas</option>
+                        </select>
+                    </div>
+                </div>
+                <!-- Filtro de Selección / País -->
+                <div class="col-lg-4 col-md-12">
+                    <div class="d-flex align-items-center gap-2">
+                        <label for="filtroPais" class="text-nowrap fw-bold text-secondary mb-0">Selección:</label>
+                        <select id="filtroPais" class="form-select custom-input" onchange="aplicarFiltros()">
+                            <option value="todos">Todas las Selecciones</option>
+                            <option value="FWC">Especiales FIFA (FWC)</option>
+                            <!-- Se poblará dinámicamente -->
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sección de Figuritas Especiales -->
+        <div id="seccionEspecialesWrapper" class="mb-4">
+            <div class="card shadow-sm rounded-4 border-0 mb-3 overflow-hidden">
+                <div class="card-header bg-dark text-white py-3 px-4 d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0 fw-bold"><i class="bi bi-star-fill text-warning"></i> Figuritas Especiales (FIFA World Cup)</h5>
+                    <span class="badge bg-light text-dark fw-bold" id="badgeEspecialesCount">0 / 20</span>
+                </div>
+                <div class="card-body p-4 bg-light">
+                    <div class="sticker-grid" id="gridEspeciales">
+                        <!-- Figuritas especiales cargadas dinámicamente -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Acordeón con los Grupos y Selecciones (RF-CO-01) -->
+        <div class="accordion" id="albumGruposAccordion">
+            <!-- Cargado dinámicamente -->
+        </div>
+
+    </div>
+
+    <!-- Scripts y Conectividad con API -->
+    <script>
+        // Obtenemos credenciales del usuario autenticado
+        const dniUsuario = localStorage.getItem('dni_figus');
+        const datosUsuario = JSON.parse(localStorage.getItem('usuario_figus') || '{}');
+
+        // Redirigir a login si no hay sesión abierta
+        if (!dniUsuario) {
+            window.location.href = '/login.html';
+        }
+
+        // Configurar UI con los datos del usuario
+        if (datosUsuario.nombre) {
+            document.getElementById('userInfo').innerHTML = `<i class="bi bi-person-fill"></i> ${datosUsuario.nombre} ${datosUsuario.apellido} (DNI: ${dniUsuario})`;
+        }
+
+        let dbColeccion = null;
+
+        // Cargar Colección desde la API
+        async function cargarColeccion() {
+            try {
+                const res = await fetch(`/api/coleccion/${dniUsuario}`);
+                if (!res.ok) {
+                    throw new Error("No se pudo obtener la colección");
+                }
+                const data = await res.json();
+                dbColeccion = data;
+
+                // Actualizar Dashboard (RF-CO-04)
+                document.getElementById('valProgreso').textContent = `${data.porcentaje_completitud}%`;
+                document.getElementById('fillProgreso').style.width = `${data.porcentaje_completitud}%`;
+                document.getElementById('valObtenidas').textContent = data.obtenidas_unicas;
+                document.getElementById('valFaltantes').textContent = data.faltantes;
+                document.getElementById('valRepetidas').textContent = data.total_repetidas;
+                document.getElementById('valTotalAlbum').textContent = `de ${data.total_album} figuritas`;
+
+                // Poblar selectores de países la primera vez
+                poblarSelectores(data);
+
+                // Renderizar todo el Álbum
+                renderizarAlbum(data);
+
+            } catch (err) {
+                console.error("Error al cargar la colección:", err);
+            }
+        }
+
+        // Mapeo de códigos ISO de 3 letras a 2 letras para las banderas de FlagCDN
+        const mapIso3ToIso2 = {
+            'CZE': 'cz', 'MEX': 'mx', 'RSA': 'za', 'KOR': 'kr', 'BIH': 'ba', 'CAN': 'ca', 'QAT': 'qa', 'SUI': 'ch',
+            'BRA': 'br', 'HAI': 'ht', 'MAR': 'ma', 'SCO': 'gb-sct', 'AUS': 'au', 'PAR': 'py', 'TUR': 'tr', 'USA': 'us',
+            'CUW': 'cw', 'ECU': 'ec', 'GER': 'de', 'CIV': 'ci', 'JAP': 'jp', 'NED': 'nl', 'SWE': 'se', 'TUN': 'tn',
+            'BEL': 'be', 'EGY': 'eg', 'IRN': 'ir', 'NZL': 'nz', 'CPV': 'cv', 'KSA': 'sa', 'ESP': 'es', 'URU': 'uy',
+            'FRA': 'fr', 'IRQ': 'iq', 'NOR': 'no', 'SEN': 'sn', 'ALG': 'dz', 'ARG': 'ar', 'AUT': 'at', 'JOR': 'jo',
+            'COL': 'co', 'COD': 'cd', 'POR': 'pt', 'UZB': 'uz', 'CRO': 'hr', 'ENG': 'gb-eng', 'GHA': 'gh', 'PAN': 'pa'
+        };
+
+        // Genera el HTML para la bandera SVG (compatible con Windows y móvil)
+        function obtenerBanderaHtml(codigo, clases = '') {
+            const iso2 = mapIso3ToIso2[codigo.toUpperCase()];
+            if (iso2) {
+                return `<img src="https://flagcdn.com/w40/${iso2}.png" class="flag-img ${clases}" alt="${codigo}" style="width: 25px; height: auto; border-radius: 3px; box-shadow: 0 1px 3px rgba(0,0,0,0.15); object-fit: cover;">`;
+            }
+            if (codigo === 'FWC') {
+                return `<i class="bi bi-trophy-fill text-warning ${clases}"></i>`;
+            }
+            return '';
+        }
+
+        // Poblar el filtro selector de países
+        let selectoresPoblados = false;
+        function poblarSelectores(data) {
+            if (selectoresPoblados) return;
+            const select = document.getElementById('filtroPais');
+            
+            data.grupos.forEach(grupo => {
+                grupo.selecciones.forEach(sel => {
+                    const opt = document.createElement('option');
+                    opt.value = sel.codigo;
+                    opt.textContent = `${sel.pais} (${sel.codigo})`;
+                    select.appendChild(opt);
+                });
+            });
+            selectoresPoblados = true;
+        }
+
+        // Renderizar todos los elementos (Especiales y Grupos)
+        function renderizarAlbum(data) {
+            // 1. Renderizar Especiales
+            const gridEsp = document.getElementById('gridEspeciales');
+            gridEsp.innerHTML = '';
+            
+            const espObtenidas = data.seccion_especial.figuritas.filter(f => f.cantidad > 0).length;
+            document.getElementById('badgeEspecialesCount').textContent = `${espObtenidas} / ${data.seccion_especial.figuritas.length}`;
+
+            data.seccion_especial.figuritas.forEach(fig => {
+                const card = crearTarjetaFigurita(fig);
+                gridEsp.appendChild(card);
+            });
+
+            // 2. Renderizar Grupos en el Acordeón
+            const acc = document.getElementById('albumGruposAccordion');
+            acc.innerHTML = '';
+
+            data.grupos.forEach((grupo, idx) => {
+                const accordionItem = document.createElement('div');
+                accordionItem.className = 'accordion-item border-0 rounded-4 overflow-hidden mb-3 shadow-sm';
+                
+                const headerId = `headingGroup-${grupo.grupo}`;
+                const collapseId = `collapseGroup-${grupo.grupo}`;
+
+                // Calcular total, obtenidas del grupo y banderas del grupo para poner en el header
+                let totalGrupo = 0;
+                let obtenidasGrupo = 0;
+                let banderasHtml = '';
+                
+                grupo.selecciones.forEach(sel => {
+                    totalGrupo += sel.figuritas.length;
+                    obtenidasGrupo += sel.figuritas.filter(f => f.cantidad > 0).length;
+                    banderasHtml += obtenerBanderaHtml(sel.codigo, 'me-1');
+                });
+
+                accordionItem.innerHTML = `
+                    <h2 class="accordion-header" id="${headerId}">
+                        <button class="accordion-button fw-bold py-3" type="button" data-bs-toggle="collapse" 
+                                data-bs-target="#${collapseId}" aria-expanded="${idx === 0 ? 'true' : 'false'}" aria-controls="${collapseId}">
+                            <div class="w-100 d-flex flex-wrap gap-2 justify-content-between align-items-center pe-3">
+                                <span class="d-flex align-items-center flex-wrap gap-2">
+                                    <i class="bi bi-trophy-fill text-warning me-1"></i> 
+                                    ${grupo.grupo === 'FWC' ? 'Especiales FIFA' : 'Grupo ' + grupo.grupo}
+                                    <span class="d-inline-flex gap-1 ms-2 px-2 py-1 rounded bg-light border align-items-center group-flags-container">
+                                        ${banderasHtml}
+                                    </span>
+                                </span>
+                                <span class="badge bg-secondary rounded-pill font-monospace" style="font-size: 0.8rem;">
+                                    ${obtenidasGrupo} / ${totalGrupo} Obtenidas
+                                </span>
+                            </div>
+                        </button>
+                    </h2>
+                    <div id="${collapseId}" class="accordion-collapse collapse ${idx === 0 ? 'show' : ''}" 
+                         aria-labelledby="${headerId}" data-bs-parent="#albumGruposAccordion">
+                        <div class="accordion-body bg-light p-4" id="cuerpoGrupo-${grupo.grupo}">
+                            <!-- Se poblará con las selecciones del grupo -->
+                        </div>
+                    </div>
+                `;
+
+                acc.appendChild(accordionItem);
+
+                const cuerpo = document.getElementById(`cuerpoGrupo-${grupo.grupo}`);
+
+                // Renderizar cada selección dentro del grupo (RF-CO-01)
+                grupo.selecciones.forEach(sel => {
+                    const selWrapper = document.createElement('div');
+                    selWrapper.className = 'mb-4';
+                    selWrapper.id = `selWrapper-${sel.codigo}`;
+
+                    const selObtenidas = sel.figuritas.filter(f => f.cantidad > 0).length;
+
+                    selWrapper.innerHTML = `
+                        <div class="d-flex justify-content-between align-items-center border-bottom pb-2 mb-3">
+                            <h6 class="fw-bold mb-0 text-primary-blue d-flex align-items-center gap-2" style="font-size: 1.1rem;">
+                                ${obtenerBanderaHtml(sel.codigo)} 
+                                <span>${sel.pais} (${sel.codigo})</span>
+                            </h6>
+                            <span class="badge bg-success-subtle text-success border border-success fw-bold" id="badgePais-${sel.codigo}">
+                                ${selObtenidas} / ${sel.figuritas.length}
+                            </span>
+                        </div>
+                        <div class="sticker-grid" id="gridPais-${sel.codigo}"></div>
+                    `;
+
+                    cuerpo.appendChild(selWrapper);
+
+                    const gridPais = document.getElementById(`gridPais-${sel.codigo}`);
+                    sel.figuritas.forEach(fig => {
+                        const card = crearTarjetaFigurita(fig);
+                        gridPais.appendChild(card);
+                    });
+                });
+            });
+
+            // Aplicar filtros inmediatos en caso de que existan búsquedas activas
+            aplicarFiltros();
+        }
+
+        // Crear Tarjeta de Cromo (Estética Premium HSL tailored)
+        function crearTarjetaFigurita(fig) {
+            const wrapper = document.createElement('div');
+            wrapper.className = `sticker-item-filter`;
+            wrapper.dataset.numero = fig.numero.toLowerCase();
+            wrapper.dataset.nombre = fig.nombre.toLowerCase();
+            wrapper.dataset.estado = fig.estado;
+            wrapper.dataset.pais = fig.numero.substring(0, 3).replace(/[0-9]/g, ''); // Extrae código de país
+
+            // Estilos y badges condicionales
+            let borderClass = 'faltante';
+            let badgeRepHtml = '';
+            if (fig.estado === 'obtenida') borderClass = 'obtenida';
+            if (fig.estado === 'repetida') {
+                borderClass = 'repetida';
+                badgeRepHtml = `<div class="badge-rep">x${fig.cantidad}</div>`;
+            }
+
+            // Si es especial le agregamos clase especial
+            const esEsp = fig.posicion === 'Especial' ? 'especial' : '';
+
+            wrapper.innerHTML = `
+                <div class="sticker-card ${borderClass} ${esEsp}">
+                    ${badgeRepHtml}
+                    <div class="sticker-num">${fig.numero}</div>
+                    <div class="sticker-name">${fig.nombre || '<i>Sin Completar</i>'}</div>
+                    <div>
+                        <div class="sticker-pos">${fig.posicion}</div>
+                    </div>
+                    <div class="controls">
+                        <button class="btn-ctrl btn-minus" onclick="actualizarCromo('${fig.numero}', 'decrementar', event)"><i class="bi bi-dash"></i></button>
+                        <button class="btn-ctrl btn-plus" onclick="actualizarCromo('${fig.numero}', 'incrementar', event)"><i class="bi bi-plus"></i></button>
+                    </div>
+                </div>
+            `;
+            return wrapper;
+        }
+
+        // Ajustar cantidad de cromos mediante API (RF-CO-02 y RF-CO-03)
+        async function actualizarCromo(numero, accion, event) {
+            event.stopPropagation();
+            try {
+                const res = await fetch('/api/coleccion/actualizar', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        dni: dniUsuario,
+                        numero_figurita: numero,
+                        accion: accion
+                    })
+                });
+
+                if (!res.ok) {
+                    throw new Error("Error al actualizar la figurita.");
+                }
+
+                // Recargar toda la colección para sincronizar contadores globales y locales
+                await cargarColeccion();
+
+            } catch (err) {
+                console.error("Error al actualizar cromo:", err);
+            }
+        }
+
+        // Aplicación del sistema de Búsqueda y Filtrado Avanzado (RF-CO-05)
+        function aplicarFiltros() {
+            const query = document.getElementById('buscadorText').value.trim().toLowerCase();
+            const estado = document.getElementById('filtroEstado').value;
+            const pais = document.getElementById('filtroPais').value;
+
+            // Filtrar Especiales
+            const divEsp = document.getElementById('seccionEspecialesWrapper');
+            let espVisibles = 0;
+            let espTotales = 0;
+
+            const gridEspItems = document.querySelectorAll('#gridEspeciales .sticker-item-filter');
+            gridEspItems.forEach(item => {
+                espTotales++;
+                const matchesText = !query || item.dataset.numero.includes(query) || item.dataset.nombre.includes(query);
+                const matchesEstado = (estado === 'todos') || (item.dataset.estado === estado);
+                const matchesPais = (pais === 'todos') || (pais === 'FWC');
+
+                if (matchesText && matchesEstado && matchesPais) {
+                    item.style.display = 'block';
+                    espVisibles++;
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+
+            // Ocultar sección de especiales si no hay coincidencias o se filtró otra selección
+            if (espVisibles === 0 || (pais !== 'todos' && pais !== 'FWC')) {
+                divEsp.style.display = 'none';
+            } else {
+                divEsp.style.display = 'block';
+            }
+
+            // Filtrar Grupos y Selecciones
+            const accordionItems = document.querySelectorAll('#albumGruposAccordion .accordion-item');
+            accordionItems.forEach(accItem => {
+                let seleccionesVisiblesEnGrupo = 0;
+
+                const selecciones = accItem.querySelectorAll('[id^="selWrapper-"]');
+                selecciones.forEach(sel => {
+                    const codigoPais = sel.id.replace('selWrapper-', '');
+                    let figVisiblesEnPais = 0;
+
+                    const figItems = sel.querySelectorAll('.sticker-item-filter');
+                    figItems.forEach(item => {
+                        const matchesText = !query || item.dataset.numero.includes(query) || item.dataset.nombre.includes(query);
+                        const matchesEstado = (estado === 'todos') || (item.dataset.estado === estado);
+                        const matchesPais = (pais === 'todos') || (codigoPais === pais);
+
+                        if (matchesText && matchesEstado && matchesPais) {
+                            item.style.display = 'block';
+                            figVisiblesEnPais++;
+                        } else {
+                            item.style.display = 'none';
+                        }
+                    });
+
+                    // Si no hay figuritas visibles para esta selección, la ocultamos
+                    if (figVisiblesEnPais === 0) {
+                        sel.style.display = 'none';
+                    } else {
+                        sel.style.display = 'block';
+                        seleccionesVisiblesEnGrupo++;
+                    }
+                });
+
+                // Si no hay selecciones visibles dentro del grupo, ocultamos todo el grupo del acordeón
+                if (seleccionesVisiblesEnGrupo === 0) {
+                    accItem.style.display = 'none';
+                } else {
+                    accItem.style.display = 'block';
+                }
+            });
+        }
+
+        // Cierre de Sesión seguro
+        function cerrarSesion() {
+            localStorage.clear();
+            window.location.href = '/login.html';
+        }
+
+        // Carga inicial
+        window.addEventListener('DOMContentLoaded', cargarColeccion);
+    </script>
+    
+    <!-- Bootstrap 5 Bundle JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
