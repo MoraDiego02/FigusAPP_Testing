@@ -23,6 +23,15 @@ from intercambio import (
     salir_sala_usuario
 )
 
+from fastapi import FastAPI
+
+app = FastAPI()
+
+@app.get("/")
+def root():
+    return {"estado": "FigusAPP online"}
+
+
 PORT = 8080
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 HTML_DIR = os.path.join(BASE_DIR, "html")
