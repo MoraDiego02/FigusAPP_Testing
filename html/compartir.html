@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FigusAPP - Figuritas Faltantes</title>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Custom CSS (Extendemos la estética del registro y colección) -->
+    <link rel="stylesheet" href="registro.css">
+    <!-- Icons (Bootstrap Icons) -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.2/font/bootstrap-icons.min.css">
+    <style>
+        .public-container {
+            max-width: 800px;
+            width: 90%;
+            margin: 3rem auto;
+            animation: fadeIn 0.6s ease-out;
+        }
+
+        .public-sticker-card {
+            background: #ffffff;
+            border-radius: 12px;
+            border: 2px solid var(--glass-border);
+            padding: 1rem;
+            text-align: center;
+            box-shadow: 0 4px 10px rgba(20, 52, 92, 0.04);
+            transition: all 0.2s ease;
+        }
+
+        .public-sticker-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(20, 52, 92, 0.08);
+            border-color: var(--primary-green);
+        }
+
+        .public-sticker-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        .public-header-card {
+            background: linear-gradient(135deg, var(--primary-blue), #1e4d8a);
+            color: #ffffff !important;
+            border-radius: 16px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 10px 30px rgba(20, 52, 92, 0.15);
+        }
+
+        .public-header-card h2, .public-header-card p, .public-header-card span {
+            color: #ffffff !important;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="public-container">
+        
+        <!-- Header logo / link back -->
+        <div class="text-center mb-4">
+            <img src="logonav.jpg" alt="FigusAPP Logo" style="max-height: 60px;">
+        </div>
+
+        <!-- User Stats Header Card -->
+        <div class="card public-header-card border-0">
+            <div class="d-flex flex-column flex-md-row justify-content-between align-items-center gap-3">
+                <div>
+                    <span class="badge bg-success-subtle text-success border border-success px-3 py-1 rounded-pill mb-2 fw-bold">Álbum Compartido</span>
+                    <h2 class="fw-bold mb-1" id="collector-name">Nombre de Coleccionista</h2>
+                    <p class="mb-0 text-white-50"><i class="bi bi-info-circle me-1"></i>Esta es la lista de figuritas faltantes que necesita completar.</p>
+                </div>
+                <div class="text-center bg-white bg-opacity-10 p-3 rounded-4" style="min-width: 140px;">
+                    <div class="fs-1 fw-bold text-white lh-1" id="total-missing">0</div>
+                    <div class="small text-white-50 mt-1">Figuritas Faltantes</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Filters / Search -->
+        <div class="card shadow-sm border-0 rounded-4 p-3 mb-4 bg-white">
+            <div class="row g-2 align-items-center">
+                <div class="col-md-8">
+                    <div class="input-group">
+                        <span class="input-group-text bg-white border-end-0 text-muted"><i class="bi bi-search"></i></span>
+                        <input type="text" id="searchSticker" class="form-control border-start-0 custom-input py-1"
+                            placeholder="Buscar por número, nombre o grupo..." oninput="filtrarFaltantes()">
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <a href="/login.html" class="btn btn-outline-primary w-100 fw-bold py-2 rounded-3 d-flex align-items-center justify-content-center gap-2">
+                        <i class="bi bi-box-arrow-in-right"></i> Entrar a FigusAPP
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Missing Stickers Grid -->
+        <div class="public-sticker-grid" id="missing-grid">
+            <div class="text-center py-5 text-muted w-100">
+                <div class="spinner-border text-success mb-2" role="status"></div>
+                <div>Cargando listado público...</div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Script to Fetch and Render Missing list -->
+    <script>
+        // Extract DNI from query params
+        const params = new URLSearchParams(window.location.search);
+        const dni = params.get('dni');
+
+        let missingStickers = [];
+
+        async function fetchPublicFaltantes() {
+            if (!dni) {
+                document.getElementById('missing-grid').innerHTML = 
+                    `<div class="alert alert-danger text-center w-100">Enlace inválido: Falta el parámetro de DNI del coleccionista.</div>`;
+                return;
+            }
+
+            try {
+                const res = await fetch(`/api/compartir/${dni}`);
+                if (!res.ok) throw new Error("No se pudo obtener el listado");
+                
+                const responseData = await res.json();
+                
+                // Set metadata
+                document.getElementById('collector-name').textContent = responseData.nombre;
+                document.getElementById('total-missing').textContent = responseData.total_faltantes;
+                missingStickers = responseData.faltantes;
+
+                renderMissingList();
+
+            } catch (err) {
+                console.error(err);
+                document.getElementById('missing-grid').innerHTML = 
+                    `<div class="alert alert-danger text-center w-100">Error al cargar la lista de faltantes pública. Verificá que el DNI sea válido.</div>`;
+            }
+        }
+
+        function renderMissingList() {
+            const grid = document.getElementById('missing-grid');
+            grid.innerHTML = '';
+
+            const query = document.getElementById('searchSticker').value.trim().toLowerCase();
+
+            const filtered = missingStickers.filter(s => {
+                return !query || 
+                    s.numero.toLowerCase().includes(query) || 
+                    s.nombre.toLowerCase().includes(query) || 
+                    s.grupo.toLowerCase().includes(query);
+            });
+
+            if (filtered.length === 0) {
+                grid.innerHTML = `<div class="text-center py-5 text-muted w-100">No se encontraron figuritas con los filtros aplicados.</div>`;
+                return;
+            }
+
+            filtered.forEach(s => {
+                grid.innerHTML += `
+                    <div class="public-sticker-card">
+                        <div class="fw-bold text-danger mb-1">${s.numero}</div>
+                        <div class="fw-bold text-primary-blue text-truncate mb-1" style="font-size: 0.9rem;" title="${s.nombre}">${s.nombre}</div>
+                        <div class="text-muted text-truncate" style="font-size: 0.75rem;" title="${s.grupo}">${s.grupo}</div>
+                    </div>
+                `;
+            });
+        }
+
+        function filtrarFaltantes() {
+            renderMissingList();
+        }
+
+        // Initial Load
+        window.addEventListener('DOMContentLoaded', fetchPublicFaltantes);
+    </script>
+</body>
+
+</html>

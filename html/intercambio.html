@@ -1,0 +1,1158 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FigusAPP - Intercambios y Chat</title>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Custom CSS (Extendemos la estética del registro) -->
+    <link rel="stylesheet" href="registro.css">
+    <!-- Custom CSS for collection -->
+    <link rel="stylesheet" href="coleccion.css">
+    <!-- Icons (Bootstrap Icons) -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.2/font/bootstrap-icons.min.css">
+    <style>
+        .intercambio-container {
+            max-width: 1400px;
+            width: 95%;
+            margin: 2rem auto;
+            animation: fadeIn 0.6s ease-out;
+        }
+
+        .list-group-item-collector {
+            cursor: pointer;
+            transition: all 0.25s ease;
+            border-radius: 12px !important;
+            margin-bottom: 0.5rem;
+            border: 1px solid var(--glass-border) !important;
+            background: var(--glass-bg);
+        }
+
+        .list-group-item-collector:hover {
+            transform: translateY(-2px);
+            background: #ffffff;
+            box-shadow: 0 5px 15px rgba(20, 52, 92, 0.08);
+            border-color: var(--primary-green) !important;
+        }
+
+        .list-group-item-collector.active-collector {
+            border-color: var(--primary-blue) !important;
+            background: radial-gradient(circle at top right, #f8fafc, #edf2f7);
+            box-shadow: 0 4px 12px rgba(20, 52, 92, 0.1);
+        }
+
+        /* Chat Styles */
+        .chat-container {
+            display: flex;
+            flex-direction: column;
+            height: 400px;
+            background: #ffffff;
+            border-radius: 12px;
+            border: 1px solid var(--glass-border);
+            overflow: hidden;
+        }
+
+        .chat-messages {
+            flex-grow: 1;
+            overflow-y: auto;
+            padding: 1rem;
+            background-color: #f8fafc;
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .chat-bubble {
+            max-width: 75%;
+            padding: 0.75rem 1rem;
+            border-radius: 16px;
+            font-size: 0.95rem;
+            position: relative;
+            line-height: 1.4;
+            animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .chat-bubble.sent {
+            align-self: flex-end;
+            background-color: var(--primary-blue);
+            color: #ffffff;
+            border-bottom-right-radius: 4px;
+        }
+
+        .chat-bubble.received {
+            align-self: flex-start;
+            background-color: #e2e8f0;
+            color: var(--primary-blue);
+            border-bottom-left-radius: 4px;
+        }
+
+        .chat-time {
+            font-size: 0.7rem;
+            margin-top: 0.25rem;
+            opacity: 0.8;
+            text-align: right;
+        }
+
+        .chat-input-area {
+            display: flex;
+            padding: 0.75rem;
+            background: #ffffff;
+            border-top: 1px solid var(--glass-border);
+            gap: 0.5rem;
+        }
+
+        /* Tabs styling */
+        .intercambio-tabs .nav-link {
+            color: var(--primary-blue);
+            font-weight: 600;
+            border: none;
+            border-bottom: 2px solid transparent;
+            padding: 0.75rem 1.25rem;
+            transition: all 0.2s ease;
+        }
+
+        .intercambio-tabs .nav-link:hover {
+            color: var(--primary-green);
+        }
+
+        .intercambio-tabs .nav-link.active {
+            color: var(--primary-green);
+            background: transparent;
+            border-bottom-color: var(--primary-green);
+        }
+
+        /* Comparative cards style */
+        .comparativo-sticker-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+            gap: 0.75rem;
+        }
+
+        .comparativo-sticker-card {
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            padding: 0.5rem;
+            text-align: center;
+            background: #ffffff;
+            font-size: 0.85rem;
+            font-weight: 600;
+            position: relative;
+        }
+
+        .comparativo-sticker-card.match-card {
+            border-color: var(--primary-green);
+            background: rgba(60, 169, 82, 0.08);
+            box-shadow: 0 0 8px rgba(60, 169, 82, 0.2);
+        }
+
+        .comparativo-badge-match {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: var(--primary-green);
+            color: white;
+            border-radius: 50%;
+            width: 18px;
+            height: 18px;
+            font-size: 0.7rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .unread-dot {
+            width: 10px;
+            height: 10px;
+            background-color: #ef4444;
+            border-radius: 50%;
+            display: inline-block;
+            box-shadow: 0 0 5px rgba(239, 68, 68, 0.8);
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Premium Floating Navbar -->
+    <nav class="navbar-custom">
+        <div class="nav-container-custom">
+            <!-- Left: Logo -->
+            <a class="logo-wrapper-custom" href="coleccion.html">
+                <img src="logonav.jpg" alt="FigusAPP Logo" class="logo-img-custom">
+            </a>
+
+            <!-- Center: Menu Links -->
+            <div class="nav-menu-custom">
+                <a href="coleccion.html" class="nav-link-custom">Inicio</a>
+                <a href="coleccion.html" class="nav-link-custom">Álbumes</a>
+                <a href="intercambio.html" class="nav-link-custom active">
+                    Intercambios
+                    <span class="badge-custom" id="nav-unread-badge" style="display: none;">0</span>
+                </a>
+            </div>
+
+            <!-- Right: Profile -->
+            <div class="nav-right-custom">
+                <div class="dropdown profile-dropdown-custom">
+                    <button class="btn-profile-custom dropdown-toggle" type="button" id="profileDropdown"
+                        data-bs-toggle="dropdown" aria-expanded="false">
+                        <div class="profile-avatar-wrapper">
+                            <i class="bi bi-person-circle"></i>
+                        </div>
+                        <span class="profile-text-custom">Mi Perfil</span>
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end shadow border-0 rounded-3 mt-2"
+                        aria-labelledby="profileDropdown">
+                        <li class="px-3 py-2 border-bottom">
+                            <div class="fw-bold text-dark" id="navProfileName">Usuario</div>
+                            <div class="text-muted small" id="navProfileDni">DNI: -</div>
+                        </li>
+                        <li>
+                            <a class="dropdown-item py-2 text-danger fw-semibold d-flex align-items-center gap-2" href="#" onclick="cerrarSesion()">
+                                <i class="bi bi-box-arrow-right"></i> Cerrar Sesión
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Container -->
+    <div class="intercambio-container">
+        <div class="row g-4">
+            
+            <!-- Left: Collectors List Panel -->
+            <div class="col-lg-4 col-md-5">
+                <!-- My Profile Summary Card -->
+                <div class="card shadow border-0 rounded-4 p-3 mb-3 text-white" style="background: linear-gradient(135deg, var(--primary-blue), #1e4d8a); color: #ffffff !important;">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <h6 class="fw-bold mb-0 text-white" style="color: #ffffff !important;"><i class="bi bi-person-bounding-box me-2"></i>Mi Perfil de Canje</h6>
+                        <span class="badge bg-light text-primary" id="my-profile-privacy-badge">Público</span>
+                    </div>
+                    <div class="small mb-3" style="color: rgba(255, 255, 255, 0.85) !important;">
+                        <div class="d-flex align-items-center gap-1 mb-1" style="color: rgba(255, 255, 255, 0.85) !important;">
+                            <i class="bi bi-geo-alt-fill text-warning"></i>
+                            <span id="my-profile-location" style="color: #ffffff !important;">Cargando ubicación...</span>
+                        </div>
+                        <div class="d-flex align-items-center gap-1" style="color: rgba(255, 255, 255, 0.85) !important;">
+                            <i class="bi bi-door-open-fill text-warning"></i>
+                            <span id="my-profile-room" style="color: #ffffff !important;">Sala: Ninguna (Pública)</span>
+                        </div>
+                    </div>
+                    <button class="btn btn-light btn-sm w-100 fw-bold text-primary-blue rounded-pill" onclick="abrirModalPerfil()">
+                        <i class="bi bi-pencil-square me-1"></i> Editar Perfil & Sala
+                    </button>
+                </div>
+
+                <div class="card shadow-sm border-0 rounded-4 p-3 mb-4 bg-white">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h5 class="fw-bold mb-0 text-primary-blue"><i class="bi bi-people-fill me-2"></i>Coleccionistas</h5>
+                        <button class="btn btn-outline-success btn-sm fw-semibold rounded-pill d-flex align-items-center gap-1" onclick="compartirMisFaltantes()">
+                            <i class="bi bi-share-fill" style="font-size: 0.8rem;"></i> Compartir Faltantes
+                        </button>
+                    </div>
+
+                    <!-- Filters Panel (RF-IN-02) -->
+                    <div class="mb-3">
+                        <div class="input-group mb-2">
+                            <span class="input-group-text bg-white border-end-0 text-muted"><i class="bi bi-search"></i></span>
+                            <input type="text" id="searchCollector" class="form-control border-start-0 custom-input py-1"
+                                placeholder="Buscar por nombre o barrio..." oninput="filtrarColeccionistas()">
+                        </div>
+                        <select id="filterBarrio" class="form-select custom-input py-1" onchange="filtrarColeccionistas()">
+                            <option value="todos">Todos los barrios / zonas</option>
+                            <!-- Barrios populated dynamically -->
+                        </select>
+                    </div>
+
+                    <!-- Collectors List (RF-IN-01) -->
+                    <div class="list-group overflow-y-auto" style="max-height: 500px;" id="collectors-list">
+                        <!-- Filled dynamically -->
+                        <div class="text-center py-4 text-muted">
+                            <div class="spinner-border text-success spinner-border-sm mb-2" role="status"></div>
+                            <div>Cargando coleccionistas...</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right: Details, Comparative & Chat Panel -->
+            <div class="col-lg-8 col-md-7">
+                <div class="card shadow-sm border-0 rounded-4 p-4 bg-white" style="min-height: 550px;" id="details-panel">
+                    
+                    <!-- Empty State -->
+                    <div id="empty-state" class="d-flex flex-column justify-content-center align-items-center h-100 text-center py-5">
+                        <i class="bi bi-chat-left-heart text-success-subtle mb-3" style="font-size: 4rem;"></i>
+                        <h4 class="fw-bold text-primary-blue">Intercambios y Coordinación</h4>
+                        <p class="text-muted max-width-400">Seleccioná un coleccionista de la lista de la izquierda para ver qué figuritas pueden canjear, comparar sus álbumes e iniciar un chat de coordinación.</p>
+                    </div>
+
+                    <!-- Active Collector Details (Visible when selected) -->
+                    <div id="active-collector-details" style="display: none;">
+                        <div class="d-flex justify-content-between align-items-start border-bottom pb-3 mb-3">
+                            <div>
+                                <h4 class="fw-bold text-primary-blue mb-1" id="selected-name">Nombre Apellido</h4>
+                                <div class="text-muted d-flex align-items-center gap-2 small">
+                                    <span id="selected-location"><i class="bi bi-geo-alt-fill text-danger me-1"></i>Barrio, Ciudad</span>
+                                    <span>•</span>
+                                    <span id="selected-email"><i class="bi bi-envelope-fill me-1"></i>email@correo.com</span>
+                                </div>
+                            </div>
+                            <div class="text-end">
+                                <div class="badge bg-success-subtle text-success border border-success px-3 py-2 rounded-pill fw-bold" id="selected-completion">
+                                    0% Completado
+                                </div>
+                                <div class="text-muted small mt-1" id="selected-stats">0 Repetidas | 0 Faltantes</div>
+                            </div>
+                        </div>
+
+                        <!-- Navigation Tabs (RF-IN-03, RF-IN-04, RF-IN-05) -->
+                        <ul class="nav nav-tabs intercambio-tabs mb-3" id="detailsTabs" role="tablist">
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link active" id="canjes-tab" data-bs-toggle="tab" data-bs-target="#canjes-content" type="button" role="tab" aria-controls="canjes-content" aria-selected="true">
+                                    <i class="bi bi-arrow-left-right me-1"></i> Canjes Posibles
+                                </button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="album-tab" data-bs-toggle="tab" data-bs-target="#album-content" type="button" role="tab" aria-controls="album-content" aria-selected="false">
+                                    <i class="bi bi-book-half me-1"></i> Álbum Comparativo
+                                </button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link position-relative" id="chat-tab" data-bs-toggle="tab" data-bs-target="#chat-content" type="button" role="tab" aria-controls="chat-content" aria-selected="false">
+                                    <i class="bi bi-chat-fill me-1"></i> Chat Privado
+                                    <span class="position-absolute top-0 start-100 translate-middle p-1 bg-danger border border-light rounded-circle" id="chat-unread-dot" style="display: none;"></span>
+                                </button>
+                            </li>
+                        </ul>
+
+                        <!-- Tab Contents -->
+                        <div class="tab-content" id="detailsTabsContent">
+                            
+                            <!-- Tab 1: Canjes Posibles (RF-IN-04) -->
+                            <div class="tab-pane fade show active" id="canjes-content" role="tabpanel" aria-labelledby="canjes-tab">
+                                <div class="row g-3">
+                                    <div class="col-md-6">
+                                        <div class="card border-0 bg-light p-3 h-100 rounded-3">
+                                            <h6 class="fw-bold text-success mb-2 d-flex align-items-center gap-1">
+                                                <i class="bi bi-arrow-up-circle-fill"></i> Le podés dar
+                                            </h6>
+                                            <p class="text-muted small">Tus repetidas que a este usuario le faltan.</p>
+                                            <div class="comparativo-sticker-grid" id="give-stickers-grid">
+                                                <!-- Dynamic give list -->
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="card border-0 bg-light p-3 h-100 rounded-3">
+                                            <h6 class="fw-bold text-primary mb-2 d-flex align-items-center gap-1">
+                                                <i class="bi bi-arrow-down-circle-fill"></i> Te puede dar
+                                            </h6>
+                                            <p class="text-muted small">Sus repetidas que a vos te faltan.</p>
+                                            <div class="comparativo-sticker-grid" id="receive-stickers-grid">
+                                                <!-- Dynamic receive list -->
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Tab 2: Album Completo del Coleccionista (RF-IN-03) -->
+                            <div class="tab-pane fade" id="album-content" role="tabpanel" aria-labelledby="album-tab">
+                                <div class="row g-3">
+                                    <div class="col-md-6">
+                                        <div class="card border-0 bg-light p-3 h-100 rounded-3">
+                                            <h6 class="fw-bold text-warning mb-2"><i class="bi bi-plus-square-fill me-1"></i> Sus Repetidas</h6>
+                                            <div class="comparativo-sticker-grid" id="collector-repeated-grid">
+                                                <!-- Collector repeated stickers -->
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="card border-0 bg-light p-3 h-100 rounded-3">
+                                            <h6 class="fw-bold text-danger mb-2"><i class="bi bi-dash-square-fill me-1"></i> Sus Faltantes</h6>
+                                            <div class="comparativo-sticker-grid" id="collector-missing-grid">
+                                                <!-- Collector missing stickers -->
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Tab 3: Chat de Coordinación (RF-CH-01, RF-CH-03) -->
+                            <div class="tab-pane fade" id="chat-content" role="tabpanel" aria-labelledby="chat-tab">
+                                <div class="chat-container">
+                                    <div class="chat-messages" id="chat-messages-container">
+                                        <!-- Messages flow dynamically -->
+                                    </div>
+                                    <form id="chat-form" onsubmit="enviarMensaje(event)">
+                                        <div class="chat-input-area">
+                                            <input type="text" id="chat-input-message" class="form-control custom-input" placeholder="Escribí un mensaje..." autocomplete="off">
+                                            <button type="submit" class="btn btn-success px-4 fw-bold rounded-3">
+                                                <i class="bi bi-send-fill"></i>
+                                            </button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Modal de Configuración de Perfil de Canje -->
+    <div class="modal fade" id="perfilModal" tabindex="-1" aria-labelledby="perfilModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 rounded-4 shadow-lg">
+                <div class="modal-header text-white border-0" style="background: linear-gradient(135deg, var(--primary-blue), #1e4d8a);">
+                    <h5 class="modal-title fw-bold" id="perfilModalLabel"><i class="bi bi-gear-fill me-2"></i>Mi Perfil de Intercambio</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <form id="perfilForm" onsubmit="guardarPerfil(event)">
+                        <h6 class="fw-bold text-primary-blue mb-3"><i class="bi bi-geo-alt-fill me-1"></i>Ubicación y Privacidad</h6>
+                        <div class="row g-3 mb-4">
+                            <div class="col-md-6">
+                                <label for="inputBarrio" class="form-label fw-semibold text-secondary">Barrio / Zona</label>
+                                <input type="text" class="form-control custom-input" id="inputBarrio" required placeholder="Ej: Palermo">
+                            </div>
+                            <div class="col-md-6">
+                                <label for="inputLocalidad" class="form-label fw-semibold text-secondary">Localidad / Ciudad</label>
+                                <input type="text" class="form-control custom-input" id="inputLocalidad" required placeholder="Ej: CABA">
+                            </div>
+                            <div class="col-12">
+                                <label for="selectPrivacidad" class="form-label fw-semibold text-secondary">Visibilidad del Perfil</label>
+                                <select class="form-select custom-input" id="selectPrivacidad">
+                                    <option value="publico">Público (Visible para todos los coleccionistas)</option>
+                                    <option value="privado">Privado (Solo visible si comparten el mismo código de sala)</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="d-flex justify-content-end gap-2 border-bottom pb-4 mb-4">
+                            <button type="button" class="btn btn-secondary rounded-pill px-4 fw-semibold" data-bs-dismiss="modal">Cancelar</button>
+                            <button type="submit" class="btn btn-success rounded-pill px-4 fw-bold">Guardar Perfil</button>
+                        </div>
+                    </form>
+
+                    <h6 class="fw-bold text-primary-blue mb-3"><i class="bi bi-door-open-fill me-1"></i>Sala de Intercambio Privada</h6>
+                    <p class="text-muted small">Al unirte a una sala con un código, solo verás y serás visto por los coleccionistas que tengan el mismo código de sala (ideal para grupos de amigos, escuelas o clubes).</p>
+                    
+                    <div class="card bg-light border-0 p-3 rounded-3 mb-3">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <div class="text-muted small">Estado de Sala:</div>
+                                <div class="fw-bold text-dark" id="modalRoomStatus">Sin sala activa (Pública)</div>
+                            </div>
+                            <button class="btn btn-outline-danger btn-sm fw-bold rounded-pill" id="btnSalirSala" onclick="salirDeSala()" type="button" style="display: none;">
+                                <i class="bi bi-box-arrow-left"></i> Salir de Sala
+                            </button>
+                        </div>
+                    </div>
+
+                    <div id="join-room-section">
+                        <div class="input-group">
+                            <input type="text" class="form-control custom-input" id="inputRoomCode" placeholder="Código de sala (Ej: AMIGOS2026)" style="text-transform: uppercase;">
+                            <button class="btn btn-primary fw-bold px-3" type="button" onclick="unirseASala()">Unirse / Crear</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap 5 Bundle JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- App Coordination Scripts -->
+    <script>
+        const myDni = localStorage.getItem('dni_figus');
+        const myData = JSON.parse(localStorage.getItem('usuario_figus') || '{}');
+
+        if (!myDni) {
+            window.location.href = '/login.html';
+        }
+
+        // Setup user info in profile card
+        if (myData.nombre) {
+            document.getElementById('navProfileName').textContent = `${myData.nombre} ${myData.apellido}`;
+            document.getElementById('navProfileDni').textContent = `DNI: ${myDni}`;
+        }
+
+        let allCollectors = [];
+        let myCollection = null;
+        let selectedCollector = null;
+        let activeChatInterval = null;
+        let currentMessagesCount = 0;
+
+        // Fetch my collection to do comparisons
+        async function fetchMyCollection() {
+            try {
+                const res = await fetch(`/api/coleccion/${myDni}`);
+                if (res.ok) {
+                    myCollection = await res.json();
+                }
+            } catch (err) {
+                console.error("Error al cargar mi colección:", err);
+            }
+        }
+
+        // Load collectors list
+        async function cargarColeccionistas() {
+            try {
+                const res = await fetch(`/api/coleccionistas/${myDni}`);
+                if (!res.ok) throw new Error("No se pudieron cargar los coleccionistas");
+                
+                allCollectors = await res.json();
+                
+                // Extract unique neighborhoods for filtering (RF-IN-02)
+                const barrios = [...new Set(allCollectors.map(c => c.barrio))].sort();
+                const filterSelect = document.getElementById('filterBarrio');
+                filterSelect.innerHTML = '<option value="todos">Todos los barrios / zonas</option>';
+                barrios.forEach(b => {
+                    const opt = document.createElement('option');
+                    opt.value = b;
+                    opt.textContent = b;
+                    filterSelect.appendChild(opt);
+                });
+
+                renderColeccionistasList();
+                checkUnreadMessagesGlobal();
+
+            } catch (err) {
+                console.error(err);
+                document.getElementById('collectors-list').innerHTML = 
+                    `<div class="alert alert-danger text-center m-2">Error al cargar coleccionistas.</div>`;
+            }
+        }
+
+        // Render list of collectors (RF-IN-01)
+        function renderColeccionistasList() {
+            const listContainer = document.getElementById('collectors-list');
+            listContainer.innerHTML = '';
+
+            const query = document.getElementById('searchCollector').value.trim().toLowerCase();
+            const barrioFilter = document.getElementById('filterBarrio').value;
+
+            const filtered = allCollectors.filter(c => {
+                const matchesSearch = !query || 
+                    c.nombre.toLowerCase().includes(query) || 
+                    c.apellido.toLowerCase().includes(query) || 
+                    c.barrio.toLowerCase().includes(query);
+                
+                const matchesBarrio = barrioFilter === 'todos' || c.barrio === barrioFilter;
+
+                return matchesSearch && matchesBarrio;
+            });
+
+            if (filtered.length === 0) {
+                listContainer.innerHTML = `<div class="text-center py-4 text-muted">Ningún coleccionista coincide con los filtros.</div>`;
+                return;
+            }
+
+            filtered.forEach(c => {
+                const activeClass = selectedCollector && selectedCollector.dni === c.dni ? 'active-collector' : '';
+                const item = document.createElement('div');
+                item.className = `list-group-item list-group-item-action list-group-item-collector ${activeClass} p-3`;
+                item.onclick = () => selectCollector(c);
+
+                item.innerHTML = `
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <div class="fw-bold text-primary-blue d-flex align-items-center gap-2">
+                                <span>${c.nombre} ${c.apellido}</span>
+                                <span class="unread-badge" id="unread-badge-${c.dni}" style="display: none;"><span class="unread-dot"></span></span>
+                            </div>
+                            <div class="small text-muted"><i class="bi bi-geo-alt-fill text-danger me-1"></i>${c.barrio}</div>
+                        </div>
+                        <div class="text-end">
+                            <span class="badge bg-success rounded-pill font-monospace" style="font-size: 0.75rem;">${c.porcentaje_completitud}%</span>
+                            <div class="text-muted" style="font-size: 0.7rem; margin-top: 2px;">R: ${c.repetidas} | F: ${c.faltantes}</div>
+                        </div>
+                    </div>
+                `;
+
+                listContainer.appendChild(item);
+            });
+        }
+
+        function filtrarColeccionistas() {
+            renderColeccionistasList();
+        }
+
+        // Select a collector (RF-IN-03)
+        async function selectCollector(collector) {
+            selectedCollector = collector;
+            
+            // Highlight selected item in list
+            renderColeccionistasList();
+
+            // Hide empty state and show details card
+            const emptyState = document.getElementById('empty-state');
+            emptyState.classList.add('d-none');
+            emptyState.classList.remove('d-flex');
+            document.getElementById('active-collector-details').style.display = 'block';
+
+            // Populate header stats
+            document.getElementById('selected-name').textContent = `${collector.nombre} ${collector.apellido}`;
+            document.getElementById('selected-location').innerHTML = `<i class="bi bi-geo-alt-fill text-danger me-1"></i>${collector.barrio}, ${collector.localidad}`;
+            document.getElementById('selected-email').innerHTML = `<i class="bi bi-envelope-fill me-1"></i>${collector.mail}`;
+            document.getElementById('selected-completion').textContent = `${collector.porcentaje_completitud}% Completado`;
+            document.getElementById('selected-stats').textContent = `${collector.repetidas} Repetidas | ${collector.faltantes} Faltantes`;
+
+            // Reset tab navigation back to Canjes Posibles
+            const firstTab = document.querySelector('#detailsTabs button[data-bs-target="#canjes-content"]');
+            const bsTab = bootstrap.Tab.getOrCreateInstance(firstTab);
+            bsTab.show();
+
+            // Load and compare inventories (RF-IN-03, RF-IN-04)
+            await renderComparativos(collector.dni);
+
+            // Open chat coordination (RF-IN-05, RF-CH-01)
+            startChatLive(collector.dni);
+        }
+
+        // Render inventory comparisons
+        async function renderComparativos(collectorDni) {
+            const giveGrid = document.getElementById('give-stickers-grid');
+            const receiveGrid = document.getElementById('receive-stickers-grid');
+            const repGrid = document.getElementById('collector-repeated-grid');
+            const missGrid = document.getElementById('collector-missing-grid');
+
+            giveGrid.innerHTML = '<div class="text-center py-3 text-muted w-100 small"><div class="spinner-border spinner-border-sm text-success me-1"></div>Procesando...</div>';
+            receiveGrid.innerHTML = giveGrid.innerHTML;
+            repGrid.innerHTML = giveGrid.innerHTML;
+            missGrid.innerHTML = giveGrid.innerHTML;
+
+            try {
+                // Fetch collector's actual collection
+                const res = await fetch(`/api/coleccion/${collectorDni}`);
+                if (!res.ok) throw new Error("Error al obtener la colección del contacto");
+                const collectorCollection = await res.json();
+
+                // Compute sets
+                const myRepetidas = [];
+                const myFaltantes = [];
+                const collRepetidas = [];
+                const collFaltantes = [];
+
+                // Parse my collection
+                // Specials
+                myCollection.seccion_especial.figuritas.forEach(f => {
+                    if (f.estado === 'repetida') myRepetidas.push(f.numero);
+                    if (f.estado === 'faltante') myFaltantes.push(f.numero);
+                });
+                // Groups
+                myCollection.grupos.forEach(g => {
+                    g.selecciones.forEach(s => {
+                        s.figuritas.forEach(f => {
+                            if (f.estado === 'repetida') myRepetidas.push(f.numero);
+                            if (f.estado === 'faltante') myFaltantes.push(f.numero);
+                        });
+                    });
+                });
+
+                // Parse collector's collection
+                collectorCollection.seccion_especial.figuritas.forEach(f => {
+                    if (f.estado === 'repetida') collRepetidas.push(f.numero);
+                    if (f.estado === 'faltante') collFaltantes.push(f.numero);
+                });
+                collectorCollection.grupos.forEach(g => {
+                    g.selecciones.forEach(s => {
+                        s.figuritas.forEach(f => {
+                            if (f.estado === 'repetida') collRepetidas.push(f.numero);
+                            if (f.estado === 'faltante') collFaltantes.push(f.numero);
+                        });
+                    });
+                });
+
+                // 1. Canjes Directos (RF-IN-04: "señalar visualmente las figuritas intercambiables")
+                // Le puedo dar (Tus Repetidas que le faltan)
+                const giveList = myRepetidas.filter(num => collFaltantes.includes(num));
+                // Me puede dar (Sus Repetidas que te faltan)
+                const receiveList = collRepetidas.filter(num => myFaltantes.includes(num));
+
+                // Render "Le podés dar"
+                giveGrid.innerHTML = '';
+                if (giveList.length === 0) {
+                    giveGrid.innerHTML = '<div class="text-center py-3 text-muted w-100 small">No tenés repetidas que necesite.</div>';
+                } else {
+                    giveList.forEach(num => {
+                        giveGrid.innerHTML += `<div class="comparativo-sticker-card match-card">${num}<span class="comparativo-badge-match"><i class="bi bi-check"></i></span></div>`;
+                    });
+                }
+
+                // Render "Te puede dar"
+                receiveGrid.innerHTML = '';
+                if (receiveList.length === 0) {
+                    receiveGrid.innerHTML = '<div class="text-center py-3 text-muted w-100 small">No tiene repetidas que necesites.</div>';
+                } else {
+                    receiveList.forEach(num => {
+                        receiveGrid.innerHTML += `<div class="comparativo-sticker-card match-card">${num}<span class="comparativo-badge-match"><i class="bi bi-handshake"></i></span></div>`;
+                    });
+                }
+
+                // 2. Full Collector album details (RF-IN-03)
+                repGrid.innerHTML = '';
+                if (collRepetidas.length === 0) {
+                    repGrid.innerHTML = '<div class="text-center py-3 text-muted w-100 small">No tiene repetidas.</div>';
+                } else {
+                    collRepetidas.forEach(num => {
+                        // Highlight if I lack it (interchangeable)
+                        const isMatch = myFaltantes.includes(num) ? 'match-card' : '';
+                        const badge = myFaltantes.includes(num) ? '<span class="comparativo-badge-match"><i class="bi bi-star-fill"></i></span>' : '';
+                        repGrid.innerHTML += `<div class="comparativo-sticker-card ${isMatch}">${num}${badge}</div>`;
+                    });
+                }
+
+                missGrid.innerHTML = '';
+                if (collFaltantes.length === 0) {
+                    missGrid.innerHTML = '<div class="text-center py-3 text-muted w-100 small">No tiene faltantes (¡Álbum Completo!).</div>';
+                } else {
+                    collFaltantes.forEach(num => {
+                        // Highlight if I have it repeated
+                        const isMatch = myRepetidas.includes(num) ? 'match-card' : '';
+                        const badge = myRepetidas.includes(num) ? '<span class="comparativo-badge-match"><i class="bi bi-star-fill"></i></span>' : '';
+                        missGrid.innerHTML += `<div class="comparativo-sticker-card ${isMatch}">${num}${badge}</div>`;
+                    });
+                }
+
+            } catch (err) {
+                console.error(err);
+                giveGrid.innerHTML = '<div class="text-center py-3 text-danger w-100 small">Error.</div>';
+                receiveGrid.innerHTML = giveGrid.innerHTML;
+            }
+        }
+
+        // Live Chat Module (RF-CH-01, RF-CH-02, RF-CH-03)
+        function startChatLive(collectorDni) {
+            if (activeChatInterval) clearInterval(activeChatInterval);
+            
+            currentMessagesCount = 0;
+            updateChatMessages(collectorDni);
+
+            // Poll for new messages every 3 seconds
+            activeChatInterval = setInterval(() => {
+                updateChatMessages(collectorDni);
+            }, 3000);
+        }
+
+        async function updateChatMessages(collectorDni) {
+            try {
+                const res = await fetch(`/api/mensajes/${myDni}/${collectorDni}`);
+                if (!res.ok) return;
+                const messages = await res.json();
+
+                const container = document.getElementById('chat-messages-container');
+
+                // RF-CH-02: Notify user if we received a new message and count increases
+                if (messages.length > currentMessagesCount) {
+                    // Check if last message was received (not sent by me) to play notification
+                    const lastMsg = messages[messages.length - 1];
+                    if (lastMsg.remitente !== myDni && currentMessagesCount > 0) {
+                        showToastNotification(`Nuevo mensaje de ${selectedCollector.nombre}: "${lastMsg.mensaje}"`);
+                    }
+                    
+                    currentMessagesCount = messages.length;
+                    renderChatFlow(messages);
+                    
+                    // Reset global count
+                    checkUnreadMessagesGlobal();
+                }
+
+            } catch (err) {
+                console.error("Error al obtener mensajes:", err);
+            }
+        }
+
+        function renderChatFlow(messages) {
+            const container = document.getElementById('chat-messages-container');
+            container.innerHTML = '';
+
+            if (messages.length === 0) {
+                container.innerHTML = '<div class="text-center py-4 text-muted small">No hay mensajes previos. ¡Mandá un mensaje para empezar!</div>';
+                return;
+            }
+
+            messages.forEach(msg => {
+                const isSent = msg.remitente === myDni;
+                const bubble = document.createElement('div');
+                bubble.className = `chat-bubble ${isSent ? 'sent' : 'received'}`;
+                
+                // Parse date
+                let timeStr = '';
+                if (msg.fecha) {
+                    try {
+                        const date = new Date(msg.fecha);
+                        timeStr = date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                    } catch (e) {}
+                }
+
+                bubble.innerHTML = `
+                    <div>${msg.mensaje}</div>
+                    <div class="chat-time">${timeStr}</div>
+                `;
+
+                container.appendChild(bubble);
+            });
+
+            // Scroll to bottom
+            container.scrollTop = container.scrollHeight;
+        }
+
+        async function enviarMensaje(event) {
+            event.preventDefault();
+            if (!selectedCollector) return;
+
+            const input = document.getElementById('chat-input-message');
+            const txt = input.value.trim();
+            if (!txt) return;
+
+            // Clear input immediately for snappy feel
+            input.value = '';
+
+            try {
+                const res = await fetch('/api/mensajes/enviar', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        remitente: myDni,
+                        destinatario: selectedCollector.dni,
+                        mensaje: txt
+                    })
+                });
+
+                if (res.ok) {
+                    // Update chat immediately
+                    await updateChatMessages(selectedCollector.dni);
+                }
+
+            } catch (err) {
+                console.error("Error al enviar mensaje:", err);
+            }
+        }
+
+        // Global unread notifications badge loader (RF-CH-02, RF-CH-03)
+        async function checkUnreadMessagesGlobal() {
+            let totalUnread = 0;
+            
+            for (const col of allCollectors) {
+                try {
+                    const res = await fetch(`/api/mensajes/${myDni}/${col.dni}`);
+                    if (res.ok) {
+                        const messages = await res.json();
+                        const unreadCount = messages.filter(m => m.destinatario === myDni && !m.leido).length;
+                        
+                        const badge = document.getElementById(`unread-badge-${col.dni}`);
+                        if (badge) {
+                            if (unreadCount > 0) {
+                                badge.style.display = 'inline-block';
+                            } else {
+                                badge.style.display = 'none';
+                            }
+                        }
+                        
+                        totalUnread += unreadCount;
+                    }
+                } catch (e) {}
+            }
+
+            const navBadge = document.getElementById('nav-unread-badge');
+            if (navBadge) {
+                if (totalUnread > 0) {
+                    navBadge.textContent = totalUnread;
+                    navBadge.style.display = 'inline-block';
+                } else {
+                    navBadge.style.display = 'none';
+                }
+            }
+        }
+
+        // Share Missing List (RF-SC-01, RF-SC-02, RF-SC-03)
+        function compartirMisFaltantes() {
+            // Generate public shareable URL
+            const shareUrl = `${window.location.origin}/compartir.html?dni=${myDni}`;
+
+            // Try using native navigator.share (RF-SC-03)
+            if (navigator.share) {
+                navigator.share({
+                    title: 'FigusAPP - Mis Figuritas Faltantes',
+                    text: `Chequeá cuáles son las figuritas que me faltan para ver si podemos canjear!`,
+                    url: shareUrl
+                }).catch(err => {
+                    // Fallback to copy clipboard
+                    copyToClipboard(shareUrl);
+                });
+            } else {
+                copyToClipboard(shareUrl);
+            }
+        }
+
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text).then(() => {
+                showToastNotification("Enlace público copiado al portapapeles. ¡Compartilo en tus redes o WhatsApp!");
+            }).catch(err => {
+                alert(`Copiá este enlace para compartir: ${text}`);
+            });
+        }
+
+        // Custom notification system (RF-CH-02)
+        function showToastNotification(message) {
+            // Create toast container if doesn't exist
+            let container = document.getElementById('toast-notification-container');
+            if (!container) {
+                container = document.createElement('div');
+                container.id = 'toast-notification-container';
+                container.style.position = 'fixed';
+                container.style.bottom = '20px';
+                container.style.right = '20px';
+                container.style.zIndex = '9999';
+                container.style.display = 'flex';
+                container.style.flexDirection = 'column';
+                container.style.gap = '10px';
+                document.body.appendChild(container);
+            }
+
+            const toast = document.createElement('div');
+            toast.className = 'card border-0 shadow-lg text-white p-3 rounded-3';
+            toast.style.background = 'linear-gradient(135deg, var(--primary-blue), #1e4d8a)';
+            toast.style.width = '300px';
+            toast.style.animation = 'popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
+
+            toast.innerHTML = `
+                <div class="d-flex justify-content-between align-items-center mb-1">
+                    <span class="fw-bold"><i class="bi bi-bell-fill text-warning me-1"></i> Notificación</span>
+                    <button type="button" class="btn-close btn-close-white" style="font-size: 0.75rem;" onclick="this.parentElement.parentElement.remove()"></button>
+                </div>
+                <div class="small">${message}</div>
+            `;
+
+            container.appendChild(toast);
+
+            // Auto remove after 5 seconds
+            setTimeout(() => {
+                if (toast.parentElement) toast.remove();
+            }, 5000);
+        }
+
+        let myProfileInstance = null;
+
+        // Load my own profile summary card and populate it
+        async function cargarMiPerfilSummary() {
+            try {
+                const res = await fetch(`/api/perfil/${myDni}`);
+                if (!res.ok) throw new Error("No se pudo cargar el perfil");
+                const profile = await res.json();
+                
+                myProfileInstance = profile;
+
+                // Update location display
+                const barrio = profile.barrio || 'Sin barrio';
+                const localidad = profile.localidad || 'Sin localidad';
+                document.getElementById('my-profile-location').textContent = `${barrio}, ${localidad}`;
+                
+                // Update privacy display
+                const isPublic = profile.publico !== false; // defaults to true
+                const privacyBadge = document.getElementById('my-profile-privacy-badge');
+                if (isPublic) {
+                    privacyBadge.textContent = 'Público';
+                    privacyBadge.className = 'badge bg-light text-primary';
+                } else {
+                    privacyBadge.textContent = 'Privado';
+                    privacyBadge.className = 'badge bg-warning text-dark';
+                }
+
+                // Update room display
+                const roomSpan = document.getElementById('my-profile-room');
+                if (profile.codigo_sala) {
+                    roomSpan.textContent = `Sala: ${profile.codigo_sala}`;
+                } else {
+                    roomSpan.textContent = 'Sala: Ninguna (Pública)';
+                }
+            } catch (err) {
+                console.error("Error cargando el resumen de mi perfil:", err);
+            }
+        }
+
+        // Open profile modal and load data
+        async function abrirModalPerfil() {
+            try {
+                // Refresh profile data
+                await cargarMiPerfilSummary();
+                
+                if (!myProfileInstance) return;
+
+                // Fill form inputs
+                document.getElementById('inputBarrio').value = myProfileInstance.barrio || '';
+                document.getElementById('inputLocalidad').value = myProfileInstance.localidad || '';
+                document.getElementById('selectPrivacidad').value = (myProfileInstance.publico !== false) ? 'publico' : 'privado';
+
+                // Setup room status in modal
+                const modalRoomStatus = document.getElementById('modalRoomStatus');
+                const btnSalirSala = document.getElementById('btnSalirSala');
+                const joinRoomSection = document.getElementById('join-room-section');
+                const inputRoomCode = document.getElementById('inputRoomCode');
+
+                if (myProfileInstance.codigo_sala) {
+                    modalRoomStatus.innerHTML = `Sala activa: <span class="badge bg-success font-monospace" style="font-size: 0.9rem;">${myProfileInstance.codigo_sala}</span>`;
+                    btnSalirSala.style.display = 'block';
+                    joinRoomSection.style.display = 'none';
+                    inputRoomCode.value = '';
+                } else {
+                    modalRoomStatus.textContent = 'Sin sala activa (Pública)';
+                    btnSalirSala.style.display = 'none';
+                    joinRoomSection.style.display = 'block';
+                }
+
+                // Show modal
+                const modalEl = document.getElementById('perfilModal');
+                const modal = bootstrap.Modal.getOrCreateInstance(modalEl);
+                modal.show();
+
+            } catch (err) {
+                console.error("Error al abrir modal de perfil:", err);
+            }
+        }
+
+        // Guardar perfil (barrio, localidad, privacidad)
+        async function guardarPerfil(event) {
+            event.preventDefault();
+
+            const barrio = document.getElementById('inputBarrio').value.trim();
+            const localidad = document.getElementById('inputLocalidad').value.trim();
+            const publico = document.getElementById('selectPrivacidad').value === 'publico';
+
+            try {
+                const res = await fetch('/api/perfil/actualizar', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        dni: myDni,
+                        barrio: barrio,
+                        localidad: localidad,
+                        publico: publico
+                    })
+                });
+
+                if (res.ok) {
+                    showToastNotification("¡Perfil actualizado con éxito!");
+                    
+                    // Close modal
+                    const modalEl = document.getElementById('perfilModal');
+                    const modal = bootstrap.Modal.getInstance(modalEl);
+                    if (modal) modal.hide();
+
+                    // Refresh
+                    await cargarMiPerfilSummary();
+                    await cargarColeccionistas();
+                } else {
+                    const data = await res.json();
+                    alert(data.error || "Error al actualizar el perfil");
+                }
+            } catch (err) {
+                console.error("Error guardando perfil:", err);
+                alert("Error de conexión al guardar perfil.");
+            }
+        }
+
+        // Unirse a sala
+        async function unirseASala() {
+            const inputRoomCode = document.getElementById('inputRoomCode');
+            const code = inputRoomCode.value.trim().toUpperCase();
+
+            if (!code) {
+                alert("Por favor ingresa un código de sala.");
+                return;
+            }
+
+            try {
+                const res = await fetch('/api/perfil/sala/unirse', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        dni: myDni,
+                        codigo_sala: code
+                    })
+                });
+
+                if (res.ok) {
+                    showToastNotification(`¡Te has unido a la sala ${code}!`);
+                    
+                    // Close modal
+                    const modalEl = document.getElementById('perfilModal');
+                    const modal = bootstrap.Modal.getInstance(modalEl);
+                    if (modal) modal.hide();
+
+                    // Refresh
+                    await cargarMiPerfilSummary();
+                    await cargarColeccionistas();
+                } else {
+                    const data = await res.json();
+                    alert(data.error || "Error al unirse a la sala");
+                }
+            } catch (err) {
+                console.error("Error al unirse a la sala:", err);
+            }
+        }
+
+        // Salir de sala
+        async function salirDeSala() {
+            try {
+                const res = await fetch('/api/perfil/sala/salir', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        dni: myDni
+                    })
+                });
+
+                if (res.ok) {
+                    showToastNotification("Has salido de la sala. Tu perfil vuelve a ser visible públicamente.");
+                    
+                    // Close modal
+                    const modalEl = document.getElementById('perfilModal');
+                    const modal = bootstrap.Modal.getInstance(modalEl);
+                    if (modal) modal.hide();
+
+                    // Refresh
+                    await cargarMiPerfilSummary();
+                    await cargarColeccionistas();
+                } else {
+                    const data = await res.json();
+                    alert(data.error || "Error al salir de la sala");
+                }
+            } catch (err) {
+                console.error("Error al salir de la sala:", err);
+            }
+        }
+
+        function cerrarSesion() {
+            localStorage.clear();
+            window.location.href = '/login.html';
+        }
+
+        // Initial setup
+        window.addEventListener('DOMContentLoaded', async () => {
+            await fetchMyCollection();
+            await cargarMiPerfilSummary();
+            await cargarColeccionistas();
+            
+            // Clean up intervals on page close/navigate
+            window.addEventListener('beforeunload', () => {
+                if (activeChatInterval) clearInterval(activeChatInterval);
+            });
+        });
+    </script>
+</body>
+
+</html>

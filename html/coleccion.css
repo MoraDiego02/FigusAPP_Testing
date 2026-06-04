@@ -260,8 +260,15 @@
 }
 
 @keyframes popIn {
-    from { transform: scale(0); opacity: 0; }
-    to { transform: scale(1); opacity: 1; }
+    from {
+        transform: scale(0);
+        opacity: 0;
+    }
+
+    to {
+        transform: scale(1);
+        opacity: 1;
+    }
 }
 
 /* Estilo para figuritas FWC Especiales */
@@ -269,6 +276,7 @@
     border-color: #818cf8;
     background: radial-gradient(circle at top right, #fff, #f5f3ff);
 }
+
 .sticker-card.especial.obtenida {
     box-shadow: 0 4px 15px rgba(129, 140, 248, 0.2);
     border-color: #6366f1;
@@ -289,5 +297,239 @@
     border-color: var(--glass-border) !important;
     background-color: rgba(255, 255, 255, 0.6) !important;
     backdrop-filter: blur(4px);
-    box-shadow: inset 0 1px 2px rgba(0,0,0,0.05);
+    box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+/* ==================== Estilos del Navbar Premium ==================== */
+
+.navbar-custom {
+    background: #ffffff;
+    border: 1px solid rgba(20, 52, 92, 0.08);
+    border-radius: 16px;
+    margin: 1.5rem auto 1.5rem;
+    max-width: 1400px;
+    width: 95%;
+    padding: 0.75rem 2rem;
+    box-shadow: 0 10px 30px rgba(20, 52, 92, 0.06);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+}
+
+.nav-container-custom {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: nowrap;
+}
+
+/* Logo */
+.logo-wrapper-custom {
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+}
+
+.logo-img-custom {
+    height: 52px;
+    width: auto;
+    object-fit: contain;
+    transition: transform 0.3s ease;
+}
+
+.logo-img-custom:hover {
+    transform: scale(1.03);
+}
+
+/* Menu Links */
+.nav-menu-custom {
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+    margin: 0 auto;
+}
+
+.nav-link-custom {
+    position: relative;
+    color: var(--primary-blue);
+    font-weight: 600;
+    font-size: 1.05rem;
+    padding: 0.5rem 0.25rem;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+}
+
+.nav-link-custom:hover {
+    color: var(--primary-green);
+}
+
+.nav-link-custom.active {
+    color: var(--primary-green);
+}
+
+.nav-link-custom.active::after {
+    content: '';
+    position: absolute;
+    bottom: -6px;
+    left: 10%;
+    width: 80%;
+    height: 3.5px;
+    background: linear-gradient(90deg, var(--primary-green), #6ee7b7);
+    border-radius: 10px;
+    box-shadow: 0 3px 8px rgba(60, 169, 82, 0.4);
+}
+
+/* Badge en Links */
+.badge-custom {
+    background: #ef4444;
+    color: white;
+    font-size: 0.75rem;
+    font-weight: 700;
+    border-radius: 10px;
+    padding: 1px 6px;
+    margin-left: 5px;
+    vertical-align: top;
+    display: inline-block;
+    box-shadow: 0 2px 5px rgba(239, 68, 68, 0.35);
+    animation: pulseBadge 2s infinite;
+}
+
+@keyframes pulseBadge {
+    0% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.08);
+    }
+
+    100% {
+        transform: scale(1);
+    }
+}
+
+/* Derecha: Buscador y Perfil */
+.nav-right-custom {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+}
+
+/* Buscador */
+.search-box-custom {
+    position: relative;
+    max-width: 240px;
+    width: 100%;
+}
+
+.search-icon-custom {
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #94a3b8;
+    font-size: 0.95rem;
+}
+
+.search-input-custom {
+    width: 100%;
+    padding: 0.5rem 1rem 0.5rem 2.2rem;
+    border-radius: 10px;
+    border: 1px solid #cbd5e1;
+    background-color: #f8fafc;
+    color: var(--primary-blue);
+    font-size: 0.9rem;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.search-input-custom:focus {
+    background-color: #ffffff;
+    border-color: var(--primary-green);
+    box-shadow: 0 0 0 4px rgba(60, 169, 82, 0.12);
+    outline: none;
+}
+
+/* Perfil Dropdown */
+.profile-dropdown-custom {
+    display: inline-block;
+}
+
+.btn-profile-custom {
+    background: none;
+    border: none;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    color: var(--primary-blue);
+    transition: all 0.2s ease;
+}
+
+.btn-profile-custom:focus,
+.btn-profile-custom:active {
+    outline: none !important;
+    box-shadow: none !important;
+}
+
+.profile-avatar-wrapper {
+    font-size: 1.8rem;
+    line-height: 1;
+    margin-bottom: 2px;
+    color: var(--primary-blue);
+    transition: color 0.2s ease, transform 0.2s ease;
+}
+
+.btn-profile-custom:hover .profile-avatar-wrapper {
+    color: var(--primary-green);
+    transform: translateY(-1px);
+}
+
+.btn-profile-custom:hover .profile-text-custom {
+    color: var(--primary-green);
+}
+
+.profile-text-custom {
+    font-size: 0.8rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    transition: color 0.2s ease;
+}
+
+/* Responsivo */
+@media (max-width: 991px) {
+    .navbar-custom {
+        padding: 1rem;
+    }
+
+    .nav-container-custom {
+        flex-direction: column;
+        gap: 1rem;
+        align-items: center;
+    }
+
+    .nav-menu-custom {
+        width: 100%;
+        justify-content: center;
+        gap: 1.25rem;
+        flex-wrap: wrap;
+        margin: 0.5rem 0;
+    }
+
+    .nav-right-custom {
+        width: 100%;
+        justify-content: space-between;
+        gap: 1rem;
+    }
+
+    .search-box-custom {
+        max-width: none;
+        flex-grow: 1;
+    }
 }

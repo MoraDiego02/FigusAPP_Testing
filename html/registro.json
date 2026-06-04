@@ -1,29 +1,5 @@
 [
     {
-        "nombre": "a",
-        "apellido": "23",
-        "mail": "123",
-        "dni": "123",
-        "edad": 20,
-        "fechaRegistro": "2026-05-21T00:26:27.678Z"
-    },
-    {
-        "nombre": "q",
-        "apellido": "q",
-        "mail": "q",
-        "dni": "2",
-        "edad": 20,
-        "fechaRegistro": "2026-05-21T00:37:55.359Z"
-    },
-    {
-        "nombre": "John",
-        "apellido": "Doe",
-        "mail": "john@example.com",
-        "dni": "12345678",
-        "edad": 20,
-        "fechaRegistro": "2026-05-21T17:48:19.369Z"
-    },
-    {
         "nombre": "Diego",
         "apellido": "Mora",
         "mail": "diego123@gmail.com",
@@ -31,5 +7,51 @@
         "edad": 20,
         "password": "12345678",
         "fechaRegistro": "2026-05-28T18:18:34.847Z"
+    },
+    {
+        "nombre": "Mateo",
+        "apellido": "Fernández",
+        "mail": "mateo@gmail.com",
+        "dni": "22334455",
+        "edad": 22,
+        "password": "12345678",
+        "barrio": "San Telmo",
+        "localidad": "Buenos Aires",
+        "fechaRegistro": "2026-05-29T10:15:00.000Z",
+        "publico": true,
+        "codigo_sala": "AMIGOS2026"
+    },
+    {
+        "nombre": "Sofía",
+        "apellido": "Bianchi",
+        "mail": "sofia@gmail.com",
+        "dni": "33445566",
+        "edad": 25,
+        "password": "12345678",
+        "barrio": "Belgrano",
+        "localidad": "CABA",
+        "fechaRegistro": "2026-05-30T12:30:00.000Z"
+    },
+    {
+        "nombre": "Lucas",
+        "apellido": "Rossi",
+        "mail": "lucas@gmail.com",
+        "dni": "44556677",
+        "edad": 21,
+        "password": "12345678",
+        "barrio": "Caballito",
+        "localidad": "CABA",
+        "fechaRegistro": "2026-05-31T09:00:00.000Z"
+    },
+    {
+        "nombre": "Martina",
+        "apellido": "Silva",
+        "mail": "martina@gmail.com",
+        "dni": "55667788",
+        "edad": 24,
+        "password": "12345678",
+        "barrio": "Recoleta",
+        "localidad": "CABA",
+        "fechaRegistro": "2026-05-31T11:45:00.000Z"
     }
 ]

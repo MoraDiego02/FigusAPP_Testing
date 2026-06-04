@@ -16,44 +16,51 @@
 <body>
     <div class="registro-container d-flex align-items-center justify-content-center min-vh-100">
         <!-- Tarjeta -->
-        <div class="glass-card p-4 p-md-5 rounded-4 shadow-lg">
+        <div class="glass-card p-4 p-md-5 rounded-5 shadow-lg">
             <div class="text-center mb-4">
                 <img src="figusappfinal.png" alt="FigusAPP Logo" class="logo-img img-fluid">
                 <h2 class="fw-bold mt-2 mb-1">Crear Cuenta</h2>
                 <p class="text-white-50">Completá tus datos para organizar tu álbum</p>
             </div>
-            
+
             <form id="registroForm" novalidate>
                 <div class="row g-3">
                     <div class="col-md-6">
                         <label for="nombre" class="form-label text-white">Nombre</label>
-                        <input type="text" class="form-control custom-input" id="nombre" required placeholder="Tu nombre">
+                        <input type="text" class="form-control custom-input" id="nombre" required
+                            placeholder="Tu nombre">
                     </div>
                     <div class="col-md-6">
                         <label for="apellido" class="form-label text-white">Apellido</label>
-                        <input type="text" class="form-control custom-input" id="apellido" required placeholder="Tu apellido">
+                        <input type="text" class="form-control custom-input" id="apellido" required
+                            placeholder="Tu apellido">
                     </div>
                     <div class="col-12">
                         <label for="mail" class="form-label text-white">Correo Electrónico</label>
-                        <input type="email" class="form-control custom-input" id="mail" required placeholder="ejemplo@correo.com">
+                        <input type="email" class="form-control custom-input" id="mail" required
+                            placeholder="ejemplo@correo.com">
                     </div>
                     <div class="col-md-6">
                         <label for="dni" class="form-label text-white">DNI</label>
-                        <input type="number" class="form-control custom-input" id="dni" required placeholder="Sin puntos">
+                        <input type="number" class="form-control custom-input" id="dni" required
+                            placeholder="Sin puntos">
                     </div>
                     <div class="col-md-6">
                         <label for="edad" class="form-label text-white">Edad</label>
-                        <input type="number" class="form-control custom-input" id="edad" min="1" required placeholder="+18 años">
+                        <input type="number" class="form-control custom-input" id="edad" min="1" required
+                            placeholder="+18 años">
                         <div class="invalid-feedback" id="edadError">
                             Debes ser mayor de 18 años para registrarte.
                         </div>
                     </div>
                     <div class="col-12">
                         <label for="password" class="form-label text-white">Contraseña</label>
-                        <input type="password" class="form-control custom-input" id="password" required placeholder="Mínimo 6 caracteres">
+                        <input type="password" class="form-control custom-input" id="password" required
+                            placeholder="Mínimo 6 caracteres">
                     </div>
                     <div class="col-12 mt-4">
-                        <button type="submit" class="btn btn-primary w-100 fw-bold btn-registro" id="btnSubmit">Registrarse</button>
+                        <button type="submit" class="btn btn-primary w-100 fw-bold btn-registro"
+                            id="btnSubmit">Registrarse</button>
                     </div>
                     <div class="col-12" id="mensajeExito" style="display: none;">
                         <div class="alert alert-success mt-3" role="alert">
@@ -69,15 +76,16 @@
             </form>
 
             <div class="mt-4 text-center">
-                <p class="text-white-50 mb-0">¿Ya tienes cuenta? <a href="#" onclick="iniciar()" class="text-primary fw-bold text-decoration-none hover-link">Inicia Sesión</a></p>
+                <p class="text-white-50 mb-0">¿Ya tienes cuenta? <a href="#" onclick="iniciar()"
+                        class="text-primary fw-bold text-decoration-none hover-link">Inicia Sesión</a></p>
             </div>
         </div>
     </div>
 
     <script>
-        document.getElementById('registroForm').addEventListener('submit', async function(e) {
-            e.preventDefault(); 
-            
+        document.getElementById('registroForm').addEventListener('submit', async function (e) {
+            e.preventDefault();
+
             const nombre = document.getElementById('nombre').value.trim();
             const apellido = document.getElementById('apellido').value.trim();
             const mail = document.getElementById('mail').value.trim();
@@ -139,13 +147,13 @@
                     const data = await response.json();
                     // Mostrar mensaje de éxito
                     document.getElementById('mensajeExito').style.display = 'block';
-                    
+
                     // Almacenamos el DNI y los datos del usuario en localStorage para auto-login
                     localStorage.setItem('usuario_figus', JSON.stringify(data.usuario));
                     localStorage.setItem('dni_figus', data.usuario.dni);
 
                     document.getElementById('registroForm').reset();
-                    
+
                     // Redirigir al album de coleccion
                     setTimeout(() => {
                         window.location.href = '/coleccion.html';

@@ -6,12 +6,21 @@ from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field
 from typing import Optional, Union, Dict, Any
 
-# Importamos las funciones con tu lógica desde funciones.py
 from funciones import (
     procesar_registro, 
     verificar_login, 
     obtener_coleccion_usuario, 
     actualizar_figurita_usuario
+)
+from intercambio import (
+    obtener_coleccionistas_canje,
+    obtener_historial_mensajes,
+    registrar_mensaje,
+    obtener_faltantes_publicos,
+    obtener_perfil_usuario,
+    actualizar_perfil_usuario,
+    unirse_sala_usuario,
+    salir_sala_usuario
 )
 
 PORT = 8080
@@ -225,6 +234,126 @@ async def get_coleccion(dni: str):
 )
 async def post_actualizar_figurita(req: ActualizarFiguritaRequest):
     resultado = actualizar_figurita_usuario(req.dni, req.numero_figurita, req.accion)
+    if resultado["success"]:
+        return JSONResponse(status_code=200, content=resultado["data"])
+    return JSONResponse(status_code=resultado["code"], content={"error": resultado["error"]})
+
+
+# ---------------- Modelos y Endpoints para Módulo de Intercambio, Chat y Compartir ----------------
+
+class EnviarMensajeRequest(BaseModel):
+    remitente: str = Field(..., description="DNI del remitente", json_schema_extra={"example": "11223344"})
+    destinatario: str = Field(..., description="DNI del destinatario", json_schema_extra={"example": "12345678"})
+    mensaje: str = Field(..., description="Texto del mensaje a enviar", json_schema_extra={"example": "Hola, ¿canjeamos?"})
+
+
+@app.get(
+    "/api/coleccionistas/{dni_usuario}",
+    summary="Listado de Coleccionistas disponibles para Canje",
+    description="Retorna un listado de coleccionistas con sus métricas básicas (completado %, repetidas, faltantes) y geolocalización simulada."
+)
+async def get_coleccionistas(dni_usuario: str):
+    resultado = obtener_coleccionistas_canje(dni_usuario)
+    if resultado["success"]:
+        return JSONResponse(status_code=200, content=resultado["data"])
+    return JSONResponse(status_code=resultado["code"], content={"error": resultado["error"]})
+
+
+@app.get(
+    "/api/mensajes/{dni_usuario}/{dni_contacto}",
+    summary="Historial de mensajes privados",
+    description="Obtiene el historial de chat entre el usuario actual y el coleccionista seleccionado."
+)
+async def get_historial_mensajes(dni_usuario: str, dni_contacto: str):
+    resultado = obtener_historial_mensajes(dni_usuario, dni_contacto)
+    if resultado["success"]:
+        return JSONResponse(status_code=200, content=resultado["data"])
+    return JSONResponse(status_code=resultado["code"], content={"error": resultado["error"]})
+
+
+@app.post(
+    "/api/mensajes/enviar",
+    summary="Enviar mensaje privado",
+    description="Envía un nuevo mensaje privado a otro coleccionista para coordinar el canje."
+)
+async def post_enviar_mensaje(req: EnviarMensajeRequest):
+    resultado = registrar_mensaje(req.remitente, req.destinatario, req.mensaje)
+    if resultado["success"]:
+        return JSONResponse(status_code=200, content=resultado["data"])
+    return JSONResponse(status_code=resultado["code"], content={"error": resultado["error"]})
+
+
+@app.get(
+    "/api/compartir/{dni}",
+    summary="Ver figuritas faltantes públicas de un usuario",
+    description="Retorna una lista pública de figuritas faltantes y datos de un coleccionista a través de un enlace compartido."
+)
+async def get_compartir_faltantes(dni: str):
+    resultado = obtener_faltantes_publicos(dni)
+    if resultado["success"]:
+        return JSONResponse(status_code=200, content=resultado["data"])
+    return JSONResponse(status_code=resultado["code"], content={"error": resultado["error"]})
+
+
+# ---------------- Modelos y Endpoints para Perfil y Sala de Intercambio ----------------
+
+class PerfilUpdateRequest(BaseModel):
+    dni: str = Field(..., description="DNI del usuario", json_schema_extra={"example": "12345678"})
+    barrio: str = Field(..., description="Barrio del usuario", json_schema_extra={"example": "Palermo"})
+    localidad: str = Field(..., description="Localidad del usuario", json_schema_extra={"example": "CABA"})
+    publico: bool = Field(..., description="Si el perfil es público o privado", json_schema_extra={"example": True})
+
+class UnirseSalaRequest(BaseModel):
+    dni: str = Field(..., description="DNI del usuario", json_schema_extra={"example": "12345678"})
+    codigo_sala: str = Field(..., description="Código de la sala a unirse", json_schema_extra={"example": "SALA123"})
+
+class SalirSalaRequest(BaseModel):
+    dni: str = Field(..., description="DNI del usuario", json_schema_extra={"example": "12345678"})
+
+
+@app.get(
+    "/api/perfil/{dni}",
+    summary="Obtener Perfil del Usuario",
+    description="Retorna la información del perfil del usuario (nombre, barrio, localidad, si es público y código de sala)."
+)
+async def get_perfil(dni: str):
+    resultado = obtener_perfil_usuario(dni)
+    if resultado["success"]:
+        return JSONResponse(status_code=200, content=resultado["data"])
+    return JSONResponse(status_code=resultado["code"], content={"error": resultado["error"]})
+
+
+@app.post(
+    "/api/perfil/actualizar",
+    summary="Actualizar Perfil del Usuario",
+    description="Actualiza el barrio, localidad y privacidad del perfil de un usuario."
+)
+async def post_actualizar_perfil(req: PerfilUpdateRequest):
+    resultado = actualizar_perfil_usuario(req.dni, req.barrio, req.localidad, req.publico)
+    if resultado["success"]:
+        return JSONResponse(status_code=200, content={"mensaje": resultado["data"]})
+    return JSONResponse(status_code=resultado["code"], content={"error": resultado["error"]})
+
+
+@app.post(
+    "/api/perfil/sala/unirse",
+    summary="Unirse a una Sala de Intercambio",
+    description="Asocia al usuario con un código de sala para intercambios privados."
+)
+async def post_unirse_sala(req: UnirseSalaRequest):
+    resultado = unirse_sala_usuario(req.dni, req.codigo_sala)
+    if resultado["success"]:
+        return JSONResponse(status_code=200, content=resultado["data"])
+    return JSONResponse(status_code=resultado["code"], content={"error": resultado["error"]})
+
+
+@app.post(
+    "/api/perfil/sala/salir",
+    summary="Salir de la Sala de Intercambio",
+    description="Desasocia al usuario de su sala actual."
+)
+async def post_salir_sala(req: SalirSalaRequest):
+    resultado = salir_sala_usuario(req.dni)
     if resultado["success"]:
         return JSONResponse(status_code=200, content=resultado["data"])
     return JSONResponse(status_code=resultado["code"], content={"error": resultado["error"]})
