@@ -1,5 +1,6 @@
 import json
 import os
+from jsonbin_db import leer_datos, guardar_datos
 
 def procesar_registro(datos):
     nombre = str(datos.get("nombre") or "").strip()
@@ -32,20 +33,8 @@ def procesar_registro(datos):
         }
 
     try:
-        # Definimos la ruta del JSON
-        base_dir = os.path.dirname(os.path.abspath(__file__))
-        json_file_path = os.path.join(base_dir, "html", "registro.json")
-        
-        # Leemos los usuarios existentes
-        usuarios = []
-        if os.path.exists(json_file_path):
-            try:
-                with open(json_file_path, 'r', encoding='utf-8') as f:
-                    contenido = f.read()
-                    if contenido.strip():
-                        usuarios = json.loads(contenido)
-            except Exception as e:
-                print("Error leyendo JSON:", e)
+        # Leemos los usuarios existentes usando jsonbin_db
+        usuarios = leer_datos("registro.json")
 
         # 5. Validación HTTP 409: Evitar duplicados (Mail)
         for usuario in usuarios:
@@ -65,10 +54,9 @@ def procesar_registro(datos):
             "fechaRegistro": datos.get("fechaRegistro", "")
         }
         
-        # Guardamos el nuevo usuario en el JSON
+        # Guardamos el nuevo usuario en el JSON usando jsonbin_db
         usuarios.append(usuario_validado)
-        with open(json_file_path, 'w', encoding='utf-8') as f:
-            json.dump(usuarios, f, indent=4, ensure_ascii=False)
+        guardar_datos("registro.json", usuarios)
             
         print(f"\n¡Registro exitoso para {nombre}!")
         return {
@@ -96,20 +84,8 @@ def verificar_login(datos):
             "error": "Por favor, ingresa el correo y la contraseña."
         }
         
-    # Definimos la ruta del JSON
-    base_dir = os.path.dirname(os.path.abspath(__file__))
-    json_file_path = os.path.join(base_dir, "html", "registro.json")
-    
-    # Leemos los usuarios existentes
-    usuarios = []
-    if os.path.exists(json_file_path):
-        try:
-            with open(json_file_path, 'r', encoding='utf-8') as f:
-                contenido = f.read()
-                if contenido.strip():
-                    usuarios = json.loads(contenido)
-        except Exception as e:
-            print("Error leyendo JSON para login:", e)
+    # Leemos los usuarios existentes usando jsonbin_db
+    usuarios = leer_datos("registro.json")
             
     # 2. Buscamos si existe un usuario que coincida con Mail y Contraseña
     for usuario in usuarios:
@@ -146,16 +122,8 @@ def obtener_coleccion_usuario(mail):
     with open(base_album_path, "r", encoding="utf-8") as f:
         album_base = json.load(f)
 
-    # 2. Cargar o Inicializar la colección del usuario específico
-    colecciones = {}
-    if os.path.exists(colecciones_path):
-        try:
-            with open(colecciones_path, "r", encoding="utf-8") as f:
-                contenido = f.read()
-                if contenido.strip():
-                    colecciones = json.loads(contenido)
-        except Exception as e:
-            print("Error cargando colecciones.json:", e)
+    # 2. Cargar o Inicializar la colección del usuario específico usando jsonbin_db
+    colecciones = leer_datos("colecciones.json")
 
     user_inventory = colecciones.get(str(mail), {})
 
@@ -275,16 +243,8 @@ def actualizar_figurita_usuario(mail, numero_figurita, accion):
     base_dir = os.path.dirname(os.path.abspath(__file__))
     colecciones_path = os.path.join(base_dir, "html", "colecciones.json")
 
-    # 1. Cargar colecciones existentes
-    colecciones = {}
-    if os.path.exists(colecciones_path):
-        try:
-            with open(colecciones_path, "r", encoding="utf-8") as f:
-                contenido = f.read()
-                if contenido.strip():
-                    colecciones = json.loads(contenido)
-        except Exception as e:
-            print("Error leyendo colecciones.json en actualizar:", e)
+    # 1. Cargar colecciones existentes usando jsonbin_db
+    colecciones = leer_datos("colecciones.json")
 
     # 2. Obtener inventario del usuario
     if dni_str not in colecciones:
@@ -312,10 +272,9 @@ def actualizar_figurita_usuario(mail, numero_figurita, accion):
         # Si la cantidad llega a 0, remover la llave para mantener limpio el JSON
         user_inventory.pop(num_fig, None)
 
-    # 5. Persistir en el archivo JSON
+    # 5. Persistir en el archivo JSON usando jsonbin_db
     try:
-        with open(colecciones_path, "w", encoding="utf-8") as f:
-            json.dump(colecciones, f, indent=4, ensure_ascii=False)
+        guardar_datos("colecciones.json", colecciones)
     except Exception as e:
         return {
             "success": False,

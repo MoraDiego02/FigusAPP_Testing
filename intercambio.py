@@ -2,23 +2,13 @@ import os
 import json
 import datetime
 from funciones import obtener_coleccion_usuario
+from jsonbin_db import leer_datos, guardar_datos
 
 # ---------------- Módulos de Intercambio, Chat y Compartir (RF-IN, RF-CH, RF-SC) ----------------
 
 def obtener_coleccionistas_canje(mail_usuario):
-    base_dir = os.path.dirname(os.path.abspath(__file__))
-    json_usuarios_path = os.path.join(base_dir, "html", "registro.json")
-    
-    # 1. Cargar todos los usuarios registrados
-    usuarios = []
-    if os.path.exists(json_usuarios_path):
-        try:
-            with open(json_usuarios_path, 'r', encoding='utf-8') as f:
-                contenido = f.read()
-                if contenido.strip():
-                    usuarios = json.loads(contenido)
-        except Exception as e:
-            print("Error leyendo registro.json:", e)
+    # 1. Cargar todos los usuarios registrados usando jsonbin_db
+    usuarios = leer_datos("registro.json")
 
     # Buscar mi sala
     mi_sala = ""
@@ -85,18 +75,8 @@ def obtener_coleccionistas_canje(mail_usuario):
 
 
 def obtener_historial_mensajes(mail_usuario, mail_contacto):
-    base_dir = os.path.dirname(os.path.abspath(__file__))
-    mensajes_path = os.path.join(base_dir, "html", "mensajes.json")
-    
-    mensajes = []
-    if os.path.exists(mensajes_path):
-        try:
-            with open(mensajes_path, "r", encoding="utf-8") as f:
-                contenido = f.read()
-                if contenido.strip():
-                    mensajes = json.loads(contenido)
-        except Exception as e:
-            print("Error leyendo mensajes.json:", e)
+    # Leemos mensajes usando jsonbin_db
+    mensajes = leer_datos("mensajes.json")
 
     # Filtrar historial entre ambos usuarios (RF-CH-01, RF-CH-03)
     historial = []
@@ -113,11 +93,10 @@ def obtener_historial_mensajes(mail_usuario, mail_contacto):
                 modificado = True
             historial.append(msg)
 
-    # Persistir cambios si se marcaron mensajes como leídos
+    # Persistir cambios si se marcaron mensajes como leídos usando jsonbin_db
     if modificado:
         try:
-            with open(mensajes_path, "w", encoding="utf-8") as f:
-                json.dump(mensajes, f, indent=4, ensure_ascii=False)
+            guardar_datos("mensajes.json", mensajes)
         except Exception as e:
             print("Error actualizando lectura de mensajes:", e)
 
@@ -137,18 +116,8 @@ def registrar_mensaje(remitente, destinatario, texto):
             "error": "El remitente, destinatario y texto del mensaje son obligatorios."
         }
 
-    base_dir = os.path.dirname(os.path.abspath(__file__))
-    mensajes_path = os.path.join(base_dir, "html", "mensajes.json")
-    
-    mensajes = []
-    if os.path.exists(mensajes_path):
-        try:
-            with open(mensajes_path, "r", encoding="utf-8") as f:
-                contenido = f.read()
-                if contenido.strip():
-                    mensajes = json.loads(contenido)
-        except Exception as e:
-            print("Error leyendo mensajes.json al enviar:", e)
+    # Leemos mensajes usando jsonbin_db
+    mensajes = leer_datos("mensajes.json")
 
     nuevo_msg = {
         "remitente": str(remitente),
@@ -161,8 +130,7 @@ def registrar_mensaje(remitente, destinatario, texto):
     mensajes.append(nuevo_msg)
     
     try:
-        with open(mensajes_path, "w", encoding="utf-8") as f:
-            json.dump(mensajes, f, indent=4, ensure_ascii=False)
+        guardar_datos("mensajes.json", mensajes)
     except Exception as e:
         return {
             "success": False,
@@ -207,21 +175,16 @@ def obtener_faltantes_publicos(mail):
                         "grupo": f"Grupo {grupo['grupo']} - {sel['pais']}"
                     })
 
-    # Cargar datos básicos del usuario
-    base_dir = os.path.dirname(os.path.abspath(__file__))
-    json_usuarios_path = os.path.join(base_dir, "html", "registro.json")
-    
+    # Cargar datos básicos del usuario usando jsonbin_db
     nombre_usuario = "Coleccionista"
-    if os.path.exists(json_usuarios_path):
-        try:
-            with open(json_usuarios_path, 'r', encoding='utf-8') as f:
-                usuarios = json.load(f)
-                for u in usuarios:
-                    if u.get("mail") == mail:
-                        nombre_usuario = f"{u.get('nombre')} {u.get('apellido')}"
-                        break
-        except Exception as e:
-            print("Error cargando usuarios para enlace público:", e)
+    try:
+        usuarios = leer_datos("registro.json")
+        for u in usuarios:
+            if u.get("mail") == mail:
+                nombre_usuario = f"{u.get('nombre')} {u.get('apellido')}"
+                break
+    except Exception as e:
+        print("Error cargando usuarios para enlace público:", e)
 
     return {
         "success": True,
@@ -236,82 +199,64 @@ def obtener_faltantes_publicos(mail):
 
 
 def obtener_perfil_usuario(mail):
-    base_dir = os.path.dirname(os.path.abspath(__file__))
-    json_usuarios_path = os.path.join(base_dir, "html", "registro.json")
-    if os.path.exists(json_usuarios_path):
-        try:
-            with open(json_usuarios_path, 'r', encoding='utf-8') as f:
-                usuarios = json.load(f)
-                for u in usuarios:
-                    if u.get("mail") == mail:
-                        return {
-                            "success": True,
-                            "code": 200,
-                            "data": {
-                                "mail": u.get("mail"),
-                                "nombre": u.get("nombre"),
-                                "apellido": u.get("apellido"),
-                                "barrio": u.get("barrio", ""),
-                                "localidad": u.get("localidad", ""),
-                                "publico": u.get("publico", True),
-                                "codigo_sala": u.get("codigo_sala", "")
-                            }
-                        }
-        except Exception as e:
-            return {"success": False, "code": 500, "error": str(e)}
+    try:
+        usuarios = leer_datos("registro.json")
+        for u in usuarios:
+            if u.get("mail") == mail:
+                return {
+                    "success": True,
+                    "code": 200,
+                    "data": {
+                        "mail": u.get("mail"),
+                        "nombre": u.get("nombre"),
+                        "apellido": u.get("apellido"),
+                        "barrio": u.get("barrio", ""),
+                        "localidad": u.get("localidad", ""),
+                        "publico": u.get("publico", True),
+                        "codigo_sala": u.get("codigo_sala", "")
+                    }
+                }
+    except Exception as e:
+        return {"success": False, "code": 500, "error": str(e)}
     return {"success": False, "code": 404, "error": "Usuario no encontrado"}
 
 
 def actualizar_perfil_usuario(mail, barrio, localidad, publico):
-    base_dir = os.path.dirname(os.path.abspath(__file__))
-    json_usuarios_path = os.path.join(base_dir, "html", "registro.json")
-    if os.path.exists(json_usuarios_path):
-        try:
-            usuarios = []
-            with open(json_usuarios_path, 'r', encoding='utf-8') as f:
-                usuarios = json.load(f)
-            
-            encontrado = False
-            for u in usuarios:
-                if u.get("mail") == mail:
-                    u["barrio"] = str(barrio or "").strip()
-                    u["localidad"] = str(localidad or "").strip()
-                    u["publico"] = bool(publico)
-                    encontrado = True
-                    break
-            
-            if encontrado:
-                with open(json_usuarios_path, 'w', encoding='utf-8') as f:
-                    json.dump(usuarios, f, indent=4, ensure_ascii=False)
-                return {"success": True, "code": 200, "data": "Perfil actualizado correctamente"}
-        except Exception as e:
-            return {"success": False, "code": 500, "error": str(e)}
+    try:
+        usuarios = leer_datos("registro.json")
+        encontrado = False
+        for u in usuarios:
+            if u.get("mail") == mail:
+                u["barrio"] = str(barrio or "").strip()
+                u["localidad"] = str(localidad or "").strip()
+                u["publico"] = bool(publico)
+                encontrado = True
+                break
+        
+        if encontrado:
+            guardar_datos("registro.json", usuarios)
+            return {"success": True, "code": 200, "data": "Perfil actualizado correctamente"}
+    except Exception as e:
+        return {"success": False, "code": 500, "error": str(e)}
     return {"success": False, "code": 404, "error": "Usuario no encontrado"}
 
 
 def unirse_sala_usuario(mail, codigo_sala):
-    base_dir = os.path.dirname(os.path.abspath(__file__))
-    json_usuarios_path = os.path.join(base_dir, "html", "registro.json")
     codigo_limpio = str(codigo_sala or "").strip().upper()
-    if os.path.exists(json_usuarios_path):
-        try:
-            usuarios = []
-            with open(json_usuarios_path, 'r', encoding='utf-8') as f:
-                usuarios = json.load(f)
-            
-            encontrado = False
-            for u in usuarios:
-                if u.get("mail") == mail:
-                    u["codigo_sala"] = codigo_limpio
-                    encontrado = True
-                    break
-            
-            if encontrado:
-                with open(json_usuarios_path, 'w', encoding='utf-8') as f:
-                    json.dump(usuarios, f, indent=4, ensure_ascii=False)
-                return {"success": True, "code": 200, "data": {"codigo_sala": codigo_limpio}}
-        except Exception as e:
-            return {"success": False, "code": 500, "error": str(e)}
+    try:
+        usuarios = leer_datos("registro.json")
+        encontrado = False
+        for u in usuarios:
+            if u.get("mail") == mail:
+                u["codigo_sala"] = codigo_limpio
+                encontrado = True
+                break
+        
+        if encontrado:
+            guardar_datos("registro.json", usuarios)
+            return {"success": True, "code": 200, "data": {"codigo_sala": codigo_limpio}}
+    except Exception as e:
+        return {"success": False, "code": 500, "error": str(e)}
     return {"success": False, "code": 404, "error": "Usuario no encontrado"}
 
 
