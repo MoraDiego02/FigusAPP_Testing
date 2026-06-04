@@ -5,7 +5,7 @@ from funciones import obtener_coleccion_usuario
 
 # ---------------- Módulos de Intercambio, Chat y Compartir (RF-IN, RF-CH, RF-SC) ----------------
 
-def obtener_coleccionistas_canje(dni_usuario):
+def obtener_coleccionistas_canje(mail_usuario):
     base_dir = os.path.dirname(os.path.abspath(__file__))
     json_usuarios_path = os.path.join(base_dir, "html", "registro.json")
     
@@ -23,7 +23,7 @@ def obtener_coleccionistas_canje(dni_usuario):
     # Buscar mi sala
     mi_sala = ""
     for u in usuarios:
-        if u.get("dni") == dni_usuario:
+        if u.get("mail") == mail_usuario:
             mi_sala = u.get("codigo_sala", "").strip().upper()
             break
 
@@ -35,8 +35,8 @@ def obtener_coleccionistas_canje(dni_usuario):
     
     # 2. Para cada usuario (excepto el actual), obtener sus métricas básicas de álbum
     for idx, usuario in enumerate(usuarios):
-        u_dni = usuario.get("dni")
-        if u_dni == dni_usuario:
+        u_dni = usuario.get("mail")
+        if u_dni == mail_usuario:
             continue
             
         u_publico = usuario.get("publico", True)
@@ -47,8 +47,8 @@ def obtener_coleccionistas_canje(dni_usuario):
             if not mi_sala or mi_sala != u_sala:
                 continue
 
-        # Asignar un barrio determinista basado en su DNI/nombre para consistencia
-        barrio_idx = (int(u_dni) if u_dni.isdigit() else len(usuario.get("nombre", ""))) % len(barrios)
+        # Asignar un barrio determinista basado en su mail/nombre para consistencia
+        barrio_idx = (len(usuario.get("nombre", ""))) % len(barrios)
         usuario_barrio = usuario.get("barrio") or barrios[barrio_idx]
         usuario_localidad = usuario.get("localidad") or localidad
         
@@ -67,8 +67,7 @@ def obtener_coleccionistas_canje(dni_usuario):
         coleccionistas.append({
             "nombre": usuario.get("nombre"),
             "apellido": usuario.get("apellido"),
-            "dni": u_dni,
-            "mail": usuario.get("mail"),
+            "mail": u_dni,
             "barrio": usuario_barrio,
             "localidad": usuario_localidad,
             "porcentaje_completitud": porcentaje,
@@ -85,7 +84,7 @@ def obtener_coleccionistas_canje(dni_usuario):
     }
 
 
-def obtener_historial_mensajes(dni_usuario, dni_contacto):
+def obtener_historial_mensajes(mail_usuario, mail_contacto):
     base_dir = os.path.dirname(os.path.abspath(__file__))
     mensajes_path = os.path.join(base_dir, "html", "mensajes.json")
     
@@ -107,9 +106,9 @@ def obtener_historial_mensajes(dni_usuario, dni_contacto):
         rem = msg.get("remitente")
         dest = msg.get("destinatario")
         
-        if (rem == dni_usuario and dest == dni_contacto) or (rem == dni_contacto and dest == dni_usuario):
+        if (rem == mail_usuario and dest == mail_contacto) or (rem == mail_contacto and dest == mail_usuario):
             # Si el mensaje va dirigido al usuario actual y está sin leer, lo marcamos como leído
-            if dest == dni_usuario and not msg.get("leido", False):
+            if dest == mail_usuario and not msg.get("leido", False):
                 msg["leido"] = True
                 modificado = True
             historial.append(msg)
@@ -178,8 +177,8 @@ def registrar_mensaje(remitente, destinatario, texto):
     }
 
 
-def obtener_faltantes_publicos(dni):
-    res_col = obtener_coleccion_usuario(dni)
+def obtener_faltantes_publicos(mail):
+    res_col = obtener_coleccion_usuario(mail)
     if not res_col["success"]:
         return res_col
 
@@ -218,7 +217,7 @@ def obtener_faltantes_publicos(dni):
             with open(json_usuarios_path, 'r', encoding='utf-8') as f:
                 usuarios = json.load(f)
                 for u in usuarios:
-                    if u.get("dni") == dni:
+                    if u.get("mail") == mail:
                         nombre_usuario = f"{u.get('nombre')} {u.get('apellido')}"
                         break
         except Exception as e:
@@ -229,14 +228,14 @@ def obtener_faltantes_publicos(dni):
         "code": 200,
         "data": {
             "nombre": nombre_usuario,
-            "dni": dni,
+            "mail": mail,
             "total_faltantes": len(faltantes_lista),
             "faltantes": faltantes_lista
         }
     }
 
 
-def obtener_perfil_usuario(dni):
+def obtener_perfil_usuario(mail):
     base_dir = os.path.dirname(os.path.abspath(__file__))
     json_usuarios_path = os.path.join(base_dir, "html", "registro.json")
     if os.path.exists(json_usuarios_path):
@@ -244,15 +243,14 @@ def obtener_perfil_usuario(dni):
             with open(json_usuarios_path, 'r', encoding='utf-8') as f:
                 usuarios = json.load(f)
                 for u in usuarios:
-                    if u.get("dni") == dni:
+                    if u.get("mail") == mail:
                         return {
                             "success": True,
                             "code": 200,
                             "data": {
-                                "dni": u.get("dni"),
+                                "mail": u.get("mail"),
                                 "nombre": u.get("nombre"),
                                 "apellido": u.get("apellido"),
-                                "mail": u.get("mail"),
                                 "barrio": u.get("barrio", ""),
                                 "localidad": u.get("localidad", ""),
                                 "publico": u.get("publico", True),
@@ -264,7 +262,7 @@ def obtener_perfil_usuario(dni):
     return {"success": False, "code": 404, "error": "Usuario no encontrado"}
 
 
-def actualizar_perfil_usuario(dni, barrio, localidad, publico):
+def actualizar_perfil_usuario(mail, barrio, localidad, publico):
     base_dir = os.path.dirname(os.path.abspath(__file__))
     json_usuarios_path = os.path.join(base_dir, "html", "registro.json")
     if os.path.exists(json_usuarios_path):
@@ -275,7 +273,7 @@ def actualizar_perfil_usuario(dni, barrio, localidad, publico):
             
             encontrado = False
             for u in usuarios:
-                if u.get("dni") == dni:
+                if u.get("mail") == mail:
                     u["barrio"] = str(barrio or "").strip()
                     u["localidad"] = str(localidad or "").strip()
                     u["publico"] = bool(publico)
@@ -291,7 +289,7 @@ def actualizar_perfil_usuario(dni, barrio, localidad, publico):
     return {"success": False, "code": 404, "error": "Usuario no encontrado"}
 
 
-def unirse_sala_usuario(dni, codigo_sala):
+def unirse_sala_usuario(mail, codigo_sala):
     base_dir = os.path.dirname(os.path.abspath(__file__))
     json_usuarios_path = os.path.join(base_dir, "html", "registro.json")
     codigo_limpio = str(codigo_sala or "").strip().upper()
@@ -303,7 +301,7 @@ def unirse_sala_usuario(dni, codigo_sala):
             
             encontrado = False
             for u in usuarios:
-                if u.get("dni") == dni:
+                if u.get("mail") == mail:
                     u["codigo_sala"] = codigo_limpio
                     encontrado = True
                     break
@@ -317,6 +315,6 @@ def unirse_sala_usuario(dni, codigo_sala):
     return {"success": False, "code": 404, "error": "Usuario no encontrado"}
 
 
-def salir_sala_usuario(dni):
-    return unirse_sala_usuario(dni, "")
+def salir_sala_usuario(mail):
+    return unirse_sala_usuario(mail, "")
 

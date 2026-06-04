@@ -209,7 +209,7 @@
                         aria-labelledby="profileDropdown">
                         <li class="px-3 py-2 border-bottom">
                             <div class="fw-bold text-dark" id="navProfileName">Usuario</div>
-                            <div class="text-muted small" id="navProfileDni">DNI: -</div>
+                            <div class="text-muted small" id="navProfileMail">Mail: -</div>
                         </li>
                         <li>
                             <a class="dropdown-item py-2 text-danger fw-semibold d-flex align-items-center gap-2" href="#" onclick="cerrarSesion()">
@@ -476,17 +476,17 @@
 
     <!-- App Coordination Scripts -->
     <script>
-        const myDni = localStorage.getItem('dni_figus');
         const myData = JSON.parse(localStorage.getItem('usuario_figus') || '{}');
+        const mailUsuario = myData.mail || localStorage.getItem('mail_figus');
 
-        if (!myDni) {
+        if (!mailUsuario) {
             window.location.href = '/login.html';
         }
 
         // Setup user info in profile card
         if (myData.nombre) {
             document.getElementById('navProfileName').textContent = `${myData.nombre} ${myData.apellido}`;
-            document.getElementById('navProfileDni').textContent = `DNI: ${myDni}`;
+            document.getElementById('navProfileMail').textContent = `Mail: ${mailUsuario}`;
         }
 
         let allCollectors = [];
@@ -498,7 +498,7 @@
         // Fetch my collection to do comparisons
         async function fetchMyCollection() {
             try {
-                const res = await fetch(`/api/coleccion/${myDni}`);
+                const res = await fetch(`/api/coleccion/${encodeURIComponent(mailUsuario)}`);
                 if (res.ok) {
                     myCollection = await res.json();
                 }
@@ -510,7 +510,7 @@
         // Load collectors list
         async function cargarColeccionistas() {
             try {
-                const res = await fetch(`/api/coleccionistas/${myDni}`);
+                const res = await fetch(`/api/coleccionistas/${encodeURIComponent(mailUsuario)}`);
                 if (!res.ok) throw new Error("No se pudieron cargar los coleccionistas");
                 
                 allCollectors = await res.json();
@@ -561,7 +561,8 @@
             }
 
             filtered.forEach(c => {
-                const activeClass = selectedCollector && selectedCollector.dni === c.dni ? 'active-collector' : '';
+                const sanitizeId = (m) => (String(m || '').replace(/[@.]/g,'-'));
+                const activeClass = selectedCollector && selectedCollector.mail === c.mail ? 'active-collector' : '';
                 const item = document.createElement('div');
                 item.className = `list-group-item list-group-item-action list-group-item-collector ${activeClass} p-3`;
                 item.onclick = () => selectCollector(c);
@@ -571,7 +572,7 @@
                         <div>
                             <div class="fw-bold text-primary-blue d-flex align-items-center gap-2">
                                 <span>${c.nombre} ${c.apellido}</span>
-                                <span class="unread-badge" id="unread-badge-${c.dni}" style="display: none;"><span class="unread-dot"></span></span>
+                                <span class="unread-badge" id="unread-badge-${sanitizeId(c.mail)}" style="display: none;"><span class="unread-dot"></span></span>
                             </div>
                             <div class="small text-muted"><i class="bi bi-geo-alt-fill text-danger me-1"></i>${c.barrio}</div>
                         </div>
@@ -616,14 +617,14 @@
             bsTab.show();
 
             // Load and compare inventories (RF-IN-03, RF-IN-04)
-            await renderComparativos(collector.dni);
+            await renderComparativos(collector.mail);
 
             // Open chat coordination (RF-IN-05, RF-CH-01)
-            startChatLive(collector.dni);
+            startChatLive(collector.mail);
         }
 
         // Render inventory comparisons
-        async function renderComparativos(collectorDni) {
+        async function renderComparativos(collectorMail) {
             const giveGrid = document.getElementById('give-stickers-grid');
             const receiveGrid = document.getElementById('receive-stickers-grid');
             const repGrid = document.getElementById('collector-repeated-grid');
@@ -636,7 +637,7 @@
 
             try {
                 // Fetch collector's actual collection
-                const res = await fetch(`/api/coleccion/${collectorDni}`);
+                const res = await fetch(`/api/coleccion/${encodeURIComponent(collectorMail)}`);
                 if (!res.ok) throw new Error("Error al obtener la colección del contacto");
                 const collectorCollection = await res.json();
 
@@ -735,21 +736,21 @@
         }
 
         // Live Chat Module (RF-CH-01, RF-CH-02, RF-CH-03)
-        function startChatLive(collectorDni) {
+        function startChatLive(collectorMail) {
             if (activeChatInterval) clearInterval(activeChatInterval);
             
             currentMessagesCount = 0;
-            updateChatMessages(collectorDni);
+            updateChatMessages(collectorMail);
 
             // Poll for new messages every 3 seconds
             activeChatInterval = setInterval(() => {
-                updateChatMessages(collectorDni);
+                updateChatMessages(collectorMail);
             }, 3000);
         }
 
-        async function updateChatMessages(collectorDni) {
+        async function updateChatMessages(collectorMail) {
             try {
-                const res = await fetch(`/api/mensajes/${myDni}/${collectorDni}`);
+                const res = await fetch(`/api/mensajes/${encodeURIComponent(mailUsuario)}/${encodeURIComponent(collectorMail)}`);
                 if (!res.ok) return;
                 const messages = await res.json();
 
@@ -759,7 +760,7 @@
                 if (messages.length > currentMessagesCount) {
                     // Check if last message was received (not sent by me) to play notification
                     const lastMsg = messages[messages.length - 1];
-                    if (lastMsg.remitente !== myDni && currentMessagesCount > 0) {
+                    if (lastMsg.remitente !== mailUsuario && currentMessagesCount > 0) {
                         showToastNotification(`Nuevo mensaje de ${selectedCollector.nombre}: "${lastMsg.mensaje}"`);
                     }
                     
@@ -785,7 +786,7 @@
             }
 
             messages.forEach(msg => {
-                const isSent = msg.remitente === myDni;
+                const isSent = msg.remitente === mailUsuario;
                 const bubble = document.createElement('div');
                 bubble.className = `chat-bubble ${isSent ? 'sent' : 'received'}`;
                 
@@ -826,15 +827,15 @@
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
-                        remitente: myDni,
-                        destinatario: selectedCollector.dni,
+                        remitente: mailUsuario,
+                        destinatario: selectedCollector.mail,
                         mensaje: txt
                     })
                 });
 
                 if (res.ok) {
                     // Update chat immediately
-                    await updateChatMessages(selectedCollector.dni);
+                    await updateChatMessages(selectedCollector.mail);
                 }
 
             } catch (err) {
@@ -846,14 +847,15 @@
         async function checkUnreadMessagesGlobal() {
             let totalUnread = 0;
             
+            const sanitizeId = (m) => (String(m || '').replace(/[@.]/g,'-'));
             for (const col of allCollectors) {
                 try {
-                    const res = await fetch(`/api/mensajes/${myDni}/${col.dni}`);
+                    const res = await fetch(`/api/mensajes/${encodeURIComponent(mailUsuario)}/${encodeURIComponent(col.mail)}`);
                     if (res.ok) {
                         const messages = await res.json();
-                        const unreadCount = messages.filter(m => m.destinatario === myDni && !m.leido).length;
+                        const unreadCount = messages.filter(m => m.destinatario === mailUsuario && !m.leido).length;
                         
-                        const badge = document.getElementById(`unread-badge-${col.dni}`);
+                        const badge = document.getElementById(`unread-badge-${sanitizeId(col.mail)}`);
                         if (badge) {
                             if (unreadCount > 0) {
                                 badge.style.display = 'inline-block';
@@ -881,7 +883,7 @@
         // Share Missing List (RF-SC-01, RF-SC-02, RF-SC-03)
         function compartirMisFaltantes() {
             // Generate public shareable URL
-            const shareUrl = `${window.location.origin}/compartir.html?dni=${myDni}`;
+            const shareUrl = `${window.location.origin}/compartir.html?mail=${encodeURIComponent(mailUsuario)}`;
 
             // Try using native navigator.share (RF-SC-03)
             if (navigator.share) {
@@ -950,7 +952,7 @@
         // Load my own profile summary card and populate it
         async function cargarMiPerfilSummary() {
             try {
-                const res = await fetch(`/api/perfil/${myDni}`);
+                const res = await fetch(`/api/perfil/${encodeURIComponent(mailUsuario)}`);
                 if (!res.ok) throw new Error("No se pudo cargar el perfil");
                 const profile = await res.json();
                 
@@ -1037,7 +1039,7 @@
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
-                        dni: myDni,
+                        mail: mailUsuario,
                         barrio: barrio,
                         localidad: localidad,
                         publico: publico
@@ -1080,7 +1082,7 @@
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
-                        dni: myDni,
+                        mail: mailUsuario,
                         codigo_sala: code
                     })
                 });
@@ -1112,7 +1114,7 @@
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
-                        dni: myDni
+                        mail: mailUsuario
                     })
                 });
 

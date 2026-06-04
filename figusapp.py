@@ -60,16 +60,6 @@ class RegistroRequest(BaseModel):
         description="Correo electrónico del usuario", 
         json_schema_extra={"example": "diego@correo.com"}
     )
-    dni: Optional[str] = Field(
-        None, 
-        description="DNI del usuario (sin puntos)", 
-        json_schema_extra={"example": "12345678"}
-    )
-    edad: Optional[Union[int, str]] = Field(
-        None, 
-        description="Edad del usuario. Si es menor de 18 años, el servidor devolverá HTTP 400.", 
-        json_schema_extra={"example": 25}
-    )
     password: Optional[str] = Field(
         None, 
         description="Contraseña elegida por el usuario (mínimo 6 caracteres)", 
@@ -87,11 +77,6 @@ class LoginRequest(BaseModel):
         description="Correo electrónico registrado", 
         json_schema_extra={"example": "diego@correo.com"}
     )
-    dni: Optional[str] = Field(
-        None, 
-        description="DNI registrado sin puntos", 
-        json_schema_extra={"example": "12345678"}
-    )
     password: Optional[str] = Field(
         None, 
         description="Contraseña del usuario", 
@@ -99,7 +84,7 @@ class LoginRequest(BaseModel):
     )
 
 class ActualizarFiguritaRequest(BaseModel):
-    dni: str = Field(..., description="DNI del usuario", example="12345678")
+    mail: str = Field(..., description="Mail del usuario", example="diego@correo.com")
     numero_figurita: str = Field(..., description="Código oficial de la figurita", example="ARG10")
     accion: str = Field(..., description="Acción a realizar: 'incrementar' o 'decrementar'", example="incrementar")
 
@@ -109,8 +94,6 @@ class UsuarioResponse(BaseModel):
     nombre: str = Field(..., description="Nombre registrado del usuario", example="Diego")
     apellido: str = Field(..., description="Apellido registrado del usuario", example="Mora")
     mail: str = Field(..., description="Correo electrónico registrado", example="diego@correo.com")
-    dni: str = Field(..., description="DNI registrado", example="12345678")
-    edad: int = Field(..., description="Edad registrada", example=25)
     password: str = Field(..., description="Contraseña registrada del usuario", example="secreto123")
     fechaRegistro: str = Field(..., description="Fecha de registro", example="2026-05-21T18:22:00Z")
 
@@ -137,19 +120,15 @@ async def root():
 @app.post(
     "/guardar_registro",
     summary="Registrar Nuevo Usuario",
-    description="Procesa y almacena un nuevo usuario en registro.json. Valida campos obligatorios, edad, contraseña y correos/DNIs duplicados.",
+    description="Procesa y almacena un nuevo usuario en registro.json. Valida campos obligatorios, contraseña y correos duplicados.",
     responses={
         200: {
             "model": RegistroExitosoResponse,
             "description": "Registro completado con éxito."
         },
-        400: {
-            "model": ErrorResponse,
-            "description": "Petición Incorrecta - Edad menor a 18 años."
-        },
         409: {
             "model": ErrorResponse,
-            "description": "Conflicto - El DNI o Correo electrónico ingresado ya está registrado."
+            "description": "Conflicto - El Correo electrónico ingresado ya está registrado."
         },
         422: {
             "model": ErrorResponse,
@@ -173,7 +152,7 @@ async def guardar_registro(registro: RegistroRequest):
 @app.post(
     "/login",
     summary="Iniciar Sesión de Usuario",
-    description="Verifica las credenciales de correo electrónico, DNI y contraseña en registro.json para iniciar sesión.",
+    description="Verifica las credenciales de correo electrónico y contraseña en registro.json para iniciar sesión.",
     responses={
         200: {
             "model": LoginExitosoResponse,
@@ -181,11 +160,11 @@ async def guardar_registro(registro: RegistroRequest):
         },
         401: {
             "model": ErrorResponse,
-            "description": "No Autorizado - Correo, DNI o contraseña incorrectos."
+            "description": "No Autorizado - Correo o contraseña incorrectos."
         },
         422: {
             "model": ErrorResponse,
-            "description": "Entidad No Procesable - Campos de correo, DNI o contraseña vacíos."
+            "description": "Entidad No Procesable - Campos de correo o contraseña vacíos."
         }
     }
 )
@@ -203,9 +182,9 @@ async def login(login_data: LoginRequest):
 
 
 @app.get(
-    "/api/coleccion/{dni}",
+    "/api/coleccion/{mail}",
     summary="Obtener Colección del Usuario",
-    description="Retorna el inventario completo de figuritas (incluyendo especiales y todos los grupos del A al L) junto con métricas agregadas (faltantes, repetidas y completitud) para un DNI dado.",
+    description="Retorna el inventario completo de figuritas y métricas agregadas para un mail dado.",
     responses={
         200: {
             "description": "Colección recuperada correctamente con estadísticas avanzadas."
@@ -216,8 +195,8 @@ async def login(login_data: LoginRequest):
         }
     }
 )
-async def get_coleccion(dni: str):
-    resultado = obtener_coleccion_usuario(dni)
+async def get_coleccion(mail: str):
+    resultado = obtener_coleccion_usuario(mail)
     if resultado["success"]:
         return JSONResponse(status_code=200, content=resultado["data"])
     return JSONResponse(status_code=resultado["code"], content={"error": resultado["error"]})
@@ -242,7 +221,7 @@ async def get_coleccion(dni: str):
     }
 )
 async def post_actualizar_figurita(req: ActualizarFiguritaRequest):
-    resultado = actualizar_figurita_usuario(req.dni, req.numero_figurita, req.accion)
+    resultado = actualizar_figurita_usuario(req.mail, req.numero_figurita, req.accion)
     if resultado["success"]:
         return JSONResponse(status_code=200, content=resultado["data"])
     return JSONResponse(status_code=resultado["code"], content={"error": resultado["error"]})
@@ -251,30 +230,30 @@ async def post_actualizar_figurita(req: ActualizarFiguritaRequest):
 # ---------------- Modelos y Endpoints para Módulo de Intercambio, Chat y Compartir ----------------
 
 class EnviarMensajeRequest(BaseModel):
-    remitente: str = Field(..., description="DNI del remitente", json_schema_extra={"example": "11223344"})
-    destinatario: str = Field(..., description="DNI del destinatario", json_schema_extra={"example": "12345678"})
+    remitente: str = Field(..., description="Mail del remitente", json_schema_extra={"example": "mateo@gmail.com"})
+    destinatario: str = Field(..., description="Mail del destinatario", json_schema_extra={"example": "diego123@gmail.com"})
     mensaje: str = Field(..., description="Texto del mensaje a enviar", json_schema_extra={"example": "Hola, ¿canjeamos?"})
 
 
 @app.get(
-    "/api/coleccionistas/{dni_usuario}",
+    "/api/coleccionistas/{mail_usuario}",
     summary="Listado de Coleccionistas disponibles para Canje",
-    description="Retorna un listado de coleccionistas con sus métricas básicas (completado %, repetidas, faltantes) y geolocalización simulada."
+    description="Retorna un listado de coleccionistas con métricas básicas y geolocalización simulada."
 )
-async def get_coleccionistas(dni_usuario: str):
-    resultado = obtener_coleccionistas_canje(dni_usuario)
+async def get_coleccionistas(mail_usuario: str):
+    resultado = obtener_coleccionistas_canje(mail_usuario)
     if resultado["success"]:
         return JSONResponse(status_code=200, content=resultado["data"])
     return JSONResponse(status_code=resultado["code"], content={"error": resultado["error"]})
 
 
 @app.get(
-    "/api/mensajes/{dni_usuario}/{dni_contacto}",
+    "/api/mensajes/{mail_usuario}/{mail_contacto}",
     summary="Historial de mensajes privados",
     description="Obtiene el historial de chat entre el usuario actual y el coleccionista seleccionado."
 )
-async def get_historial_mensajes(dni_usuario: str, dni_contacto: str):
-    resultado = obtener_historial_mensajes(dni_usuario, dni_contacto)
+async def get_historial_mensajes(mail_usuario: str, mail_contacto: str):
+    resultado = obtener_historial_mensajes(mail_usuario, mail_contacto)
     if resultado["success"]:
         return JSONResponse(status_code=200, content=resultado["data"])
     return JSONResponse(status_code=resultado["code"], content={"error": resultado["error"]})
@@ -293,12 +272,12 @@ async def post_enviar_mensaje(req: EnviarMensajeRequest):
 
 
 @app.get(
-    "/api/compartir/{dni}",
+    "/api/compartir/{mail}",
     summary="Ver figuritas faltantes públicas de un usuario",
     description="Retorna una lista pública de figuritas faltantes y datos de un coleccionista a través de un enlace compartido."
 )
-async def get_compartir_faltantes(dni: str):
-    resultado = obtener_faltantes_publicos(dni)
+async def get_compartir_faltantes(mail: str):
+    resultado = obtener_faltantes_publicos(mail)
     if resultado["success"]:
         return JSONResponse(status_code=200, content=resultado["data"])
     return JSONResponse(status_code=resultado["code"], content={"error": resultado["error"]})
@@ -307,26 +286,26 @@ async def get_compartir_faltantes(dni: str):
 # ---------------- Modelos y Endpoints para Perfil y Sala de Intercambio ----------------
 
 class PerfilUpdateRequest(BaseModel):
-    dni: str = Field(..., description="DNI del usuario", json_schema_extra={"example": "12345678"})
+    mail: str = Field(..., description="Mail del usuario", json_schema_extra={"example": "diego@correo.com"})
     barrio: str = Field(..., description="Barrio del usuario", json_schema_extra={"example": "Palermo"})
     localidad: str = Field(..., description="Localidad del usuario", json_schema_extra={"example": "CABA"})
     publico: bool = Field(..., description="Si el perfil es público o privado", json_schema_extra={"example": True})
 
 class UnirseSalaRequest(BaseModel):
-    dni: str = Field(..., description="DNI del usuario", json_schema_extra={"example": "12345678"})
+    mail: str = Field(..., description="Mail del usuario", json_schema_extra={"example": "diego@correo.com"})
     codigo_sala: str = Field(..., description="Código de la sala a unirse", json_schema_extra={"example": "SALA123"})
 
 class SalirSalaRequest(BaseModel):
-    dni: str = Field(..., description="DNI del usuario", json_schema_extra={"example": "12345678"})
+    mail: str = Field(..., description="Mail del usuario", json_schema_extra={"example": "diego@correo.com"})
 
 
 @app.get(
-    "/api/perfil/{dni}",
+    "/api/perfil/{mail}",
     summary="Obtener Perfil del Usuario",
     description="Retorna la información del perfil del usuario (nombre, barrio, localidad, si es público y código de sala)."
 )
-async def get_perfil(dni: str):
-    resultado = obtener_perfil_usuario(dni)
+async def get_perfil(mail: str):
+    resultado = obtener_perfil_usuario(mail)
     if resultado["success"]:
         return JSONResponse(status_code=200, content=resultado["data"])
     return JSONResponse(status_code=resultado["code"], content={"error": resultado["error"]})
@@ -338,7 +317,7 @@ async def get_perfil(dni: str):
     description="Actualiza el barrio, localidad y privacidad del perfil de un usuario."
 )
 async def post_actualizar_perfil(req: PerfilUpdateRequest):
-    resultado = actualizar_perfil_usuario(req.dni, req.barrio, req.localidad, req.publico)
+    resultado = actualizar_perfil_usuario(req.mail, req.barrio, req.localidad, req.publico)
     if resultado["success"]:
         return JSONResponse(status_code=200, content={"mensaje": resultado["data"]})
     return JSONResponse(status_code=resultado["code"], content={"error": resultado["error"]})
@@ -350,7 +329,7 @@ async def post_actualizar_perfil(req: PerfilUpdateRequest):
     description="Asocia al usuario con un código de sala para intercambios privados."
 )
 async def post_unirse_sala(req: UnirseSalaRequest):
-    resultado = unirse_sala_usuario(req.dni, req.codigo_sala)
+    resultado = unirse_sala_usuario(req.mail, req.codigo_sala)
     if resultado["success"]:
         return JSONResponse(status_code=200, content=resultado["data"])
     return JSONResponse(status_code=resultado["code"], content={"error": resultado["error"]})
@@ -362,7 +341,7 @@ async def post_unirse_sala(req: UnirseSalaRequest):
     description="Desasocia al usuario de su sala actual."
 )
 async def post_salir_sala(req: SalirSalaRequest):
-    resultado = salir_sala_usuario(req.dni)
+    resultado = salir_sala_usuario(req.mail)
     if resultado["success"]:
         return JSONResponse(status_code=200, content=resultado["data"])
     return JSONResponse(status_code=resultado["code"], content={"error": resultado["error"]})

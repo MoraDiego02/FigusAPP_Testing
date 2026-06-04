@@ -1,28 +1,28 @@
 [
     {
-        "remitente": "22334455",
-        "destinatario": "11223344",
+        "remitente": "mateo@gmail.com",
+        "destinatario": "diego123@gmail.com",
         "mensaje": "¡Hola Diego! ¿Cómo estás? Vi que tenés a Messi (ARG10) repetido. ¡Me interesa mucho!",
         "fecha": "2026-05-31T10:15:00Z",
         "leido": true
     },
     {
-        "remitente": "11223344",
-        "destinatario": "22334455",
+        "remitente": "diego123@gmail.com",
+        "destinatario": "mateo@gmail.com",
         "mensaje": "¡Hola Mateo! Sí, lo tengo repetido. Justo vi que tenés a Neymar (BRA10) y Mbappé (FRA7) repetidos. ¿Hacemos mano a mano?",
         "fecha": "2026-05-31T10:20:00Z",
         "leido": true
     },
     {
-        "remitente": "22334455",
-        "destinatario": "11223344",
+        "remitente": "mateo@gmail.com",
+        "destinatario": "diego123@gmail.com",
         "mensaje": "¡De una! Me re sirve. ¿Coordinamos por acá para juntarnos?",
         "fecha": "2026-05-31T10:25:00Z",
         "leido": true
     },
     {
-        "remitente": "11223344",
-        "destinatario": "22334455",
+        "remitente": "diego123@gmail.com",
+        "destinatario": "mateo@gmail.com",
         "mensaje": "Hola Mateo, como va el canje?",
         "fecha": "2026-06-03T02:29:10.961544Z",
         "leido": true

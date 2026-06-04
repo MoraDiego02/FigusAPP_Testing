@@ -61,7 +61,7 @@
                         aria-labelledby="profileDropdown">
                         <li class="px-3 py-2 border-bottom">
                             <div class="fw-bold text-dark" id="navProfileName">Usuario</div>
-                            <div class="text-muted small" id="navProfileDni">DNI: -</div>
+                            <div class="text-muted small" id="navProfileMail">Mail: -</div>
                         </li>
                         <li><a class="dropdown-item py-2 text-danger fw-semibold d-flex align-items-center gap-2"
                                 href="#" onclick="cerrarSesion()">
@@ -175,21 +175,20 @@
     <!-- Scripts y Conectividad con API -->
     <script>
         // Obtenemos credenciales del usuario autenticado
-        const dniUsuario = localStorage.getItem('dni_figus');
         const datosUsuario = JSON.parse(localStorage.getItem('usuario_figus') || '{}');
+        const mailUsuario = datosUsuario.mail || localStorage.getItem('mail_figus');
 
         // Redirigir a login si no hay sesión abierta
-        if (!dniUsuario) {
+        if (!mailUsuario) {
             window.location.href = '/login.html';
         }
 
         // Configurar UI con los datos del usuario
         if (datosUsuario.nombre) {
-            // Actualizar perfil del navbar premium
             const pName = document.getElementById('navProfileName');
-            const pDni = document.getElementById('navProfileDni');
+            const pMail = document.getElementById('navProfileMail');
             if (pName) pName.textContent = `${datosUsuario.nombre} ${datosUsuario.apellido}`;
-            if (pDni) pDni.textContent = `DNI: ${dniUsuario}`;
+            if (pMail) pMail.textContent = `Mail: ${mailUsuario}`;
         }
 
         // Funciones interactivas para el navbar premium
@@ -240,7 +239,7 @@
         // Cargar Colección desde la API
         async function cargarColeccion() {
             try {
-                const res = await fetch(`/api/coleccion/${dniUsuario}`);
+                const res = await fetch(`/api/coleccion/${encodeURIComponent(mailUsuario)}`);
                 if (!res.ok) {
                     throw new Error("No se pudo obtener la colección");
                 }
@@ -452,7 +451,7 @@
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
-                        dni: dniUsuario,
+                        mail: mailUsuario,
                         numero_figurita: numero,
                         accion: accion
                     })

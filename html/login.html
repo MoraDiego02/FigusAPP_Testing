@@ -30,11 +30,7 @@
                         <input type="email" class="form-control custom-input" id="mail" required
                             placeholder="ejemplo@correo.com">
                     </div>
-                    <div class="col-12">
-                        <label for="dni" class="form-label text-white">DNI</label>
-                        <input type="number" class="form-control custom-input" id="dni" required
-                            placeholder="Ingresa tu DNI sin puntos">
-                    </div>
+                    <!-- DNI eliminado -->
                     <div class="col-12">
                         <label for="password" class="form-label text-white">Contraseña</label>
                         <input type="password" class="form-control custom-input" id="password" required
@@ -69,7 +65,6 @@
             e.preventDefault();
 
             const mail = document.getElementById('mail').value.trim();
-            const dni = document.getElementById('dni').value.trim();
             const password = document.getElementById('password').value.trim();
 
             // Función para mostrar errores en pantalla (consistencia con el registro)
@@ -80,7 +75,7 @@
                 setTimeout(() => { document.getElementById('mensajeError').style.display = 'none'; }, 4000);
             };
 
-            if (!mail || !dni || !password) {
+            if (!mail || !password) {
                 mostrarError("Por favor, completa todos los campos.");
                 return;
             }
@@ -88,7 +83,6 @@
             // Datos que enviaremos al endpoint de login
             const credenciales = {
                 mail: mail,
-                dni: dni,
                 password: password
             };
 
@@ -108,9 +102,9 @@
                     // Mostrar mensaje de éxito
                     document.getElementById('mensajeExito').style.display = 'block';
                     
-                    // Almacenamos el DNI y los datos del usuario en localStorage para la persistencia
+                    // Almacenamos los datos del usuario en localStorage para la persistencia
                     localStorage.setItem('usuario_figus', JSON.stringify(data.usuario));
-                    localStorage.setItem('dni_figus', data.usuario.dni);
+                    localStorage.setItem('mail_figus', data.usuario.mail);
 
                     document.getElementById('loginForm').reset();
 

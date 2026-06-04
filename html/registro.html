@@ -41,17 +41,10 @@
                             placeholder="ejemplo@correo.com">
                     </div>
                     <div class="col-md-6">
-                        <label for="dni" class="form-label text-white">DNI</label>
-                        <input type="number" class="form-control custom-input" id="dni" required
-                            placeholder="Sin puntos">
+                        <!-- DNI eliminado -->
                     </div>
                     <div class="col-md-6">
-                        <label for="edad" class="form-label text-white">Edad</label>
-                        <input type="number" class="form-control custom-input" id="edad" min="1" required
-                            placeholder="+18 años">
-                        <div class="invalid-feedback" id="edadError">
-                            Debes ser mayor de 18 años para registrarte.
-                        </div>
+                        <!-- Edad eliminado -->
                     </div>
                     <div class="col-12">
                         <label for="password" class="form-label text-white">Contraseña</label>
@@ -89,8 +82,7 @@
             const nombre = document.getElementById('nombre').value.trim();
             const apellido = document.getElementById('apellido').value.trim();
             const mail = document.getElementById('mail').value.trim();
-            const dni = document.getElementById('dni').value.trim();
-            const edad = parseInt(document.getElementById('edad').value);
+            // DNI y edad ya no son requeridos ni enviados
             const password = document.getElementById('password').value.trim();
 
             // Función para mostrar errores en pantalla sin usar alert
@@ -101,7 +93,7 @@
                 setTimeout(() => { document.getElementById('mensajeError').style.display = 'none'; }, 4000);
             };
 
-            if (!nombre || !apellido || !mail || !dni || isNaN(edad) || !password) {
+            if (!nombre || !apellido || !mail || !password) {
                 mostrarError("Por favor, completa todos los campos correctamente.");
                 return;
             }
@@ -111,24 +103,11 @@
                 return;
             }
 
-            const edadInput = document.getElementById('edad');
-            if (edad < 18) {
-                edadInput.classList.add('is-invalid');
-                // ERROR INTENCIONAL PARA TESTING: 
-                // Se comenta el 'return;' para que la petición viaje al backend 
-                // y podamos probar la respuesta HTTP 400 que envía el servidor.
-                // return; 
-            } else {
-                edadInput.classList.remove('is-invalid');
-            }
-
-            // Crear el objeto usuario
+            // Crear el objeto usuario (sin DNI ni edad)
             const usuario = {
                 nombre: nombre,
                 apellido: apellido,
                 mail: mail,
-                dni: dni,
-                edad: edad,
                 password: password,
                 fechaRegistro: new Date().toISOString()
             };
@@ -148,9 +127,9 @@
                     // Mostrar mensaje de éxito
                     document.getElementById('mensajeExito').style.display = 'block';
 
-                    // Almacenamos el DNI y los datos del usuario en localStorage para auto-login
+                    // Almacenamos los datos del usuario en localStorage para auto-login
                     localStorage.setItem('usuario_figus', JSON.stringify(data.usuario));
-                    localStorage.setItem('dni_figus', data.usuario.dni);
+                    localStorage.setItem('mail_figus', data.usuario.mail);
 
                     document.getElementById('registroForm').reset();
 

@@ -5,11 +5,10 @@ def procesar_registro(datos):
     nombre = str(datos.get("nombre") or "").strip()
     apellido = str(datos.get("apellido") or "").strip()
     mail = str(datos.get("mail") or "").strip()
-    dni = str(datos.get("dni") or "").strip()
     password = str(datos.get("password") or "").strip()
     
     # 1. Validación HTTP 422: Validar campos vacíos
-    if not nombre or not apellido or not mail or not dni or not password:
+    if not nombre or not apellido or not mail or not password:
         return {
             "success": False, 
             "code": 422, 
@@ -33,16 +32,6 @@ def procesar_registro(datos):
         }
 
     try:
-        edad = int(datos.get("edad") or 0)
-        
-        # 4. Validación HTTP 400: Edad mínima de 18 años
-        if edad < 18:
-            return {
-                "success": False, 
-                "code": 400, 
-                "error": "Debe ser mayor de 18 años para poder registrarse."
-            }
-            
         # Definimos la ruta del JSON
         base_dir = os.path.dirname(os.path.abspath(__file__))
         json_file_path = os.path.join(base_dir, "html", "registro.json")
@@ -58,14 +47,8 @@ def procesar_registro(datos):
             except Exception as e:
                 print("Error leyendo JSON:", e)
 
-        # 5. Validación HTTP 409: Evitar duplicados (DNI o Mail)
+        # 5. Validación HTTP 409: Evitar duplicados (Mail)
         for usuario in usuarios:
-            if usuario.get("dni") == dni:
-                return {
-                    "success": False, 
-                    "code": 409, 
-                    "error": "El DNI ingresado ya se encuentra registrado."
-                }
             if usuario.get("mail") == mail:
                 return {
                     "success": False, 
@@ -73,13 +56,11 @@ def procesar_registro(datos):
                     "error": "El correo electrónico ingresado ya se encuentra registrado."
                 }
 
-        # Si pasa todas las validaciones, creamos el registro
+        # Si pasa todas las validaciones, creamos el registro (sin DNI ni Edad)
         usuario_validado = {
             "nombre": nombre,
             "apellido": apellido,
             "mail": mail,
-            "dni": dni,
-            "edad": edad,
             "password": password,
             "fechaRegistro": datos.get("fechaRegistro", "")
         }
@@ -100,20 +81,19 @@ def procesar_registro(datos):
         return {
             "success": False, 
             "code": 422, 
-            "error": "Por favor, ingrese un número válido para la edad."
+            "error": "Por favor, ingrese datos válidos."
         }
 
 def verificar_login(datos):
     mail = str(datos.get("mail") or "").strip()
-    dni = str(datos.get("dni") or "").strip()
     password = str(datos.get("password") or "").strip()
     
     # 1. Validación HTTP 422: Validar campos vacíos
-    if not mail or not dni or not password:
+    if not mail or not password:
         return {
             "success": False, 
             "code": 422, 
-            "error": "Por favor, ingresa el correo, el DNI y la contraseña."
+            "error": "Por favor, ingresa el correo y la contraseña."
         }
         
     # Definimos la ruta del JSON
@@ -131,9 +111,9 @@ def verificar_login(datos):
         except Exception as e:
             print("Error leyendo JSON para login:", e)
             
-    # 2. Buscamos si existe un usuario que coincida exactamente con DNI, Mail y Contraseña
+    # 2. Buscamos si existe un usuario que coincida con Mail y Contraseña
     for usuario in usuarios:
-        if usuario.get("mail") == mail and usuario.get("dni") == dni and usuario.get("password") == password:
+        if usuario.get("mail") == mail and usuario.get("password") == password:
             print(f"\n¡Inicio de sesión exitoso para {usuario.get('nombre')}!")
             return {
                 "success": True, 
@@ -145,12 +125,12 @@ def verificar_login(datos):
     return {
         "success": False, 
         "code": 401, 
-        "error": "El correo electrónico, DNI o contraseña ingresados son incorrectos."
+        "error": "El correo electrónico o contraseña ingresados son incorrectos."
     }
 
 # ----------------- Funciones del Módulo de Gestión de Colección -----------------
 
-def obtener_coleccion_usuario(dni):
+def obtener_coleccion_usuario(mail):
     base_dir = os.path.dirname(os.path.abspath(__file__))
     base_album_path = os.path.join(base_dir, "html", "album_base_completo.json")
     colecciones_path = os.path.join(base_dir, "html", "colecciones.json")
@@ -177,7 +157,7 @@ def obtener_coleccion_usuario(dni):
         except Exception as e:
             print("Error cargando colecciones.json:", e)
 
-    user_inventory = colecciones.get(str(dni), {})
+    user_inventory = colecciones.get(str(mail), {})
 
     # 3. Contadores para Métricas / Estadísticas (RF-CO-04)
     total_album = 0
@@ -265,7 +245,7 @@ def obtener_coleccion_usuario(dni):
         "success": True,
         "code": 200,
         "data": {
-            "dni": dni,
+            "mail": mail,
             "total_album": total_album,
             "obtenidas_unicas": obtenidas_unicas,
             "faltantes": total_album - obtenidas_unicas,
@@ -280,8 +260,8 @@ def obtener_coleccion_usuario(dni):
         }
     }
 
-def actualizar_figurita_usuario(dni, numero_figurita, accion):
-    dni_str = str(dni).strip()
+def actualizar_figurita_usuario(mail, numero_figurita, accion):
+    dni_str = str(mail).strip()
     num_fig = str(numero_figurita).strip()
     accion = str(accion).strip().lower()
 
@@ -289,7 +269,7 @@ def actualizar_figurita_usuario(dni, numero_figurita, accion):
         return {
             "success": False,
             "code": 422,
-            "error": "Faltan parámetros obligatorios: dni, numero_figurita o accion."
+            "error": "Faltan parámetros obligatorios: mail, numero_figurita o accion."
         }
 
     base_dir = os.path.dirname(os.path.abspath(__file__))
@@ -354,7 +334,7 @@ def actualizar_figurita_usuario(dni, numero_figurita, accion):
         "success": True,
         "code": 200,
         "data": {
-            "dni": dni_str,
+            "mail": dni_str,
             "numero_figurita": num_fig,
             "nueva_cantidad": nueva_cantidad,
             "nuevo_estado": nuevo_estado,

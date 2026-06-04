@@ -113,21 +113,21 @@
 
     <!-- Script to Fetch and Render Missing list -->
     <script>
-        // Extract DNI from query params
+        // Extract mail from query params
         const params = new URLSearchParams(window.location.search);
-        const dni = params.get('dni');
+        const mail = params.get('mail');
 
         let missingStickers = [];
 
         async function fetchPublicFaltantes() {
-            if (!dni) {
+            if (!mail) {
                 document.getElementById('missing-grid').innerHTML = 
-                    `<div class="alert alert-danger text-center w-100">Enlace inválido: Falta el parámetro de DNI del coleccionista.</div>`;
+                    `<div class="alert alert-danger text-center w-100">Enlace inválido: Falta el parámetro de mail del coleccionista.</div>`;
                 return;
             }
 
             try {
-                const res = await fetch(`/api/compartir/${dni}`);
+                const res = await fetch(`/api/compartir/${encodeURIComponent(mail)}`);
                 if (!res.ok) throw new Error("No se pudo obtener el listado");
                 
                 const responseData = await res.json();
@@ -142,7 +142,7 @@
             } catch (err) {
                 console.error(err);
                 document.getElementById('missing-grid').innerHTML = 
-                    `<div class="alert alert-danger text-center w-100">Error al cargar la lista de faltantes pública. Verificá que el DNI sea válido.</div>`;
+                    `<div class="alert alert-danger text-center w-100">Error al cargar la lista de faltantes pública. Verificá que el mail sea válido.</div>`;
             }
         }
 
