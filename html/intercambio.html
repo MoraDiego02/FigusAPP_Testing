@@ -173,6 +173,69 @@
             box-shadow: 0 0 5px rgba(239, 68, 68, 0.8);
         }
 
+        @media (max-width: 991px) {
+            .intercambio-container {
+                width: 100%;
+                margin: 1rem auto;
+            }
+
+            .chat-container {
+                min-height: 420px;
+            }
+
+            .chat-input-area {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .chat-input-area button {
+                width: 100%;
+            }
+
+            .intercambio-tabs .nav-link {
+                font-size: 0.95rem;
+                padding: 0.65rem 0.9rem;
+            }
+
+            .card#details-panel {
+                min-height: auto;
+            }
+
+            .list-group {
+                max-height: 360px;
+            }
+        }
+
+        @media (max-width: 767px) {
+            .intercambio-container {
+                margin: 0.75rem auto;
+            }
+
+            .intercambio-tabs .nav-link {
+                padding: 0.55rem 0.75rem;
+                font-size: 0.9rem;
+            }
+
+            .chat-container {
+                min-height: 360px;
+            }
+
+            .card .d-flex.justify-content-between {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 0.75rem;
+            }
+
+            .btn-profile-custom {
+                flex-direction: row;
+                gap: 0.5rem;
+            }
+
+            .profile-text-custom {
+                display: none;
+            }
+        }
+
         @keyframes popIn {
             from {
                 opacity: 0;

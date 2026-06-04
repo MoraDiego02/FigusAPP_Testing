@@ -18,6 +18,16 @@ body {
     color: var(--primary-blue);
 }
 
+.registro-container {
+    min-height: 100vh;
+    width: 100%;
+    padding: 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+}
+
 /* Contenedor Glassmorphism adaptado a modo claro */
 .glass-card {
     background: var(--glass-bg);
@@ -25,7 +35,7 @@ body {
     -webkit-backdrop-filter: blur(16px);
     border: 1px solid var(--glass-border);
     width: 100%;
-    max-width: 550px;
+    max-width: 520px;
     box-shadow: 0 20px 40px -10px rgba(20, 52, 92, 0.15);
     /* Animación de entrada suave */
     animation: fadeIn 0.8s ease-out;
@@ -136,6 +146,37 @@ body {
 }
 
 /* Animaciones Keyframes */
+@media (max-width: 768px) {
+    body {
+        background-attachment: scroll;
+    }
+
+    .registro-container {
+        padding: 1.5rem 0;
+    }
+
+    .glass-card {
+        padding: 1.8rem 1.4rem;
+        margin: 0 0.75rem;
+    }
+
+    .logo-img {
+        max-width: 140px;
+    }
+
+    .form-label {
+        font-size: 0.95rem;
+    }
+
+    .custom-input {
+        padding: 0.85rem 0.95rem;
+    }
+
+    .btn-registro {
+        font-size: 1rem;
+    }
+}
+
 @keyframes fadeIn {
     from {
         opacity: 0;
