@@ -172,6 +172,17 @@
             display: inline-block;
             box-shadow: 0 0 5px rgba(239, 68, 68, 0.8);
         }
+
+        @keyframes popIn {
+            from {
+                opacity: 0;
+                transform: scale(0.9) translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
+        }
     </style>
 </head>
 
@@ -494,6 +505,8 @@
         let selectedCollector = null;
         let activeChatInterval = null;
         let currentMessagesCount = 0;
+        const lastUnreadCounts = {};
+        let isFirstUnreadLoad = true;
 
         // Fetch my collection to do comparisons
         async function fetchMyCollection() {
@@ -761,7 +774,13 @@
                     // Check if last message was received (not sent by me) to play notification
                     const lastMsg = messages[messages.length - 1];
                     if (lastMsg.remitente !== mailUsuario && currentMessagesCount > 0) {
-                        showToastNotification(`Nuevo mensaje de ${selectedCollector.nombre}: "${lastMsg.mensaje}"`);
+                        // Only play notification if we are not looking at the active chat tab
+                        const chatTab = document.getElementById('chat-tab');
+                        const isChatTabActive = chatTab && chatTab.classList.contains('active');
+                        if (!isChatTabActive) {
+                            showToastNotification(`Nuevo mensaje de ${selectedCollector.nombre}: "${lastMsg.mensaje}"`);
+                            playNotificationSound();
+                        }
                     }
                     
                     currentMessagesCount = messages.length;
@@ -855,6 +874,28 @@
                         const messages = await res.json();
                         const unreadCount = messages.filter(m => m.destinatario === mailUsuario && !m.leido).length;
                         
+                        // Check if unread count increased for this user
+                        const previousCount = lastUnreadCounts[col.mail] || 0;
+                        if (unreadCount > previousCount) {
+                            if (!isFirstUnreadLoad) {
+                                // Only notify if this is not the currently active collector OR if the chat tab is not active
+                                const isCurrentActive = selectedCollector && selectedCollector.mail === col.mail;
+                                const chatTab = document.getElementById('chat-tab');
+                                const isChatTabActive = chatTab && chatTab.classList.contains('active');
+                                
+                                if (!isCurrentActive || !isChatTabActive) {
+                                    // Find the last unread message
+                                    const unreadMsgs = messages.filter(m => m.destinatario === mailUsuario && !m.leido);
+                                    const lastUnreadMsg = unreadMsgs[unreadMsgs.length - 1];
+                                    if (lastUnreadMsg) {
+                                        showToastNotification(`Nuevo mensaje de ${col.nombre}: "${lastUnreadMsg.mensaje}"`);
+                                        playNotificationSound();
+                                    }
+                                }
+                            }
+                        }
+                        lastUnreadCounts[col.mail] = unreadCount;
+
                         const badge = document.getElementById(`unread-badge-${sanitizeId(col.mail)}`);
                         if (badge) {
                             if (unreadCount > 0) {
@@ -868,6 +909,8 @@
                     }
                 } catch (e) {}
             }
+            
+            isFirstUnreadLoad = false;
 
             const navBadge = document.getElementById('nav-unread-badge');
             if (navBadge) {
@@ -908,8 +951,56 @@
             });
         }
 
-        // Custom notification system (RF-CH-02)
+        // Request browser notification permissions on startup
+        function requestNotificationPermission() {
+            if ("Notification" in window) {
+                if (Notification.permission === "default") {
+                    Notification.requestPermission();
+                }
+            }
+        }
+
+        // Web Audio Synthesized double beep
+        function playNotificationSound() {
+            try {
+                const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                
+                const playBeep = (delay, frequency, duration) => {
+                    const osc = audioCtx.createOscillator();
+                    const gain = audioCtx.createGain();
+                    
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(frequency, audioCtx.currentTime + delay);
+                    
+                    gain.gain.setValueAtTime(0.1, audioCtx.currentTime + delay);
+                    gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + delay + duration);
+                    
+                    osc.connect(gain);
+                    gain.connect(audioCtx.destination);
+                    
+                    osc.start(audioCtx.currentTime + delay);
+                    osc.stop(audioCtx.currentTime + delay + duration);
+                };
+                
+                playBeep(0, 587.33, 0.12); // D5
+                playBeep(0.15, 880, 0.18); // A5
+            } catch (e) {
+                console.warn("AudioContext block/not supported:", e);
+            }
+        }
+
+        // Custom notification system (RF-CH-02) with premium design
         function showToastNotification(message) {
+            // Browser Desktop Notification
+            if ("Notification" in window && Notification.permission === "granted") {
+                try {
+                    new Notification("FigusAPP", {
+                        body: message,
+                        icon: "/logonav.jpg"
+                    });
+                } catch (e) {}
+            }
+
             // Create toast container if doesn't exist
             let container = document.getElementById('toast-notification-container');
             if (!container) {
@@ -927,16 +1018,24 @@
 
             const toast = document.createElement('div');
             toast.className = 'card border-0 shadow-lg text-white p-3 rounded-3';
-            toast.style.background = 'linear-gradient(135deg, var(--primary-blue), #1e4d8a)';
-            toast.style.width = '300px';
+            toast.style.background = 'rgba(15, 23, 42, 0.85)';
+            toast.style.backdropFilter = 'blur(10px)';
+            toast.style.borderLeft = '5px solid var(--primary-green, #10b981)';
+            toast.style.borderTop = '1px solid rgba(255, 255, 255, 0.1)';
+            toast.style.borderRight = '1px solid rgba(255, 255, 255, 0.1)';
+            toast.style.borderBottom = '1px solid rgba(255, 255, 255, 0.1)';
+            toast.style.width = '320px';
+            toast.style.fontFamily = "'Outfit', sans-serif";
             toast.style.animation = 'popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
 
             toast.innerHTML = `
-                <div class="d-flex justify-content-between align-items-center mb-1">
-                    <span class="fw-bold"><i class="bi bi-bell-fill text-warning me-1"></i> Notificación</span>
-                    <button type="button" class="btn-close btn-close-white" style="font-size: 0.75rem;" onclick="this.parentElement.parentElement.remove()"></button>
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <span class="fw-semibold d-flex align-items-center gap-1" style="font-size: 0.9rem; color: var(--primary-green, #10b981);">
+                        <i class="bi bi-chat-left-dots-fill"></i> ¡Nuevo mensaje!
+                    </span>
+                    <button type="button" class="btn-close btn-close-white" style="font-size: 0.7rem; filter: opacity(0.7);" onclick="this.parentElement.parentElement.remove()"></button>
                 </div>
-                <div class="small">${message}</div>
+                <div class="small text-light" style="opacity: 0.95; line-height: 1.4;">${message}</div>
             `;
 
             container.appendChild(toast);
@@ -1145,13 +1244,18 @@
 
         // Initial setup
         window.addEventListener('DOMContentLoaded', async () => {
+            requestNotificationPermission();
             await fetchMyCollection();
             await cargarMiPerfilSummary();
             await cargarColeccionistas();
             
+            // Poll for global unread messages every 4 seconds to detect new incoming messages
+            const globalUnreadInterval = setInterval(checkUnreadMessagesGlobal, 4000);
+            
             // Clean up intervals on page close/navigate
             window.addEventListener('beforeunload', () => {
                 if (activeChatInterval) clearInterval(activeChatInterval);
+                if (globalUnreadInterval) clearInterval(globalUnreadInterval);
             });
         });
     </script>
